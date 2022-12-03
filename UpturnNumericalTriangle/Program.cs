@@ -1,5 +1,7 @@
 ﻿// See https://aka.ms/new-console-template for more information
 
+using System.Text;
+
 Pattern.UpturnNumeralTriangle(16);
 Console.ReadKey();
 
@@ -9,147 +11,70 @@ public class Pattern
     {
         int lastHorizontalXCoordinate = n;
         int lastVerticalYCoordinate = n;
-        int totalSymbolsInLine = lastHorizontalXCoordinate;
+        int totalSymbolsInRow = lastHorizontalXCoordinate;
         var currentXCoordinate = 1;
-        var currentLineNumber = 1;
 
-        DrawFirstLine(lastHorizontalXCoordinate, currentXCoordinate, currentLineNumber, totalSymbolsInLine);
-        currentLineNumber++;
+        var stringBuilder = new StringBuilder();
 
-        DrawRestOfTheLines(n, currentLineNumber, currentXCoordinate, lastVerticalYCoordinate);
+        for (var row = 1; row < n + 1; row++)
+        {
+            int symbol = row % 10;
+            DrawLineWithSpaces(row,
+                currentXCoordinate,
+                lastVerticalYCoordinate,
+                lastHorizontalXCoordinate,
+                totalSymbolsInRow);
 
-        var triangle = string.Empty;
+            stringBuilder.Append(symbol);
+        }
+
+        var triangle = stringBuilder.ToString();
         return triangle;
     }
 
-    private static void DrawFirstLine(
-        int lastHorizontalXCoordinate,
-        int currentXCoordinate,
-        int currentLineNumber,
-        int totalSymbolsInLine)
-    {
-        DrawLine(lastHorizontalXCoordinate, currentXCoordinate, currentLineNumber, totalSymbolsInLine);
-        Console.WriteLine();
-    }
-
-    private static void DrawLine(
-        int lastHorizontalXCoordinate,
-        int currentXCoordinate,
-        int currentLineNumber,
-        int totalSymbolsInLine)
-    {
-        int amountOfNumbersToDraw = totalSymbolsInLine;
-        for (var i = 0; i < amountOfNumbersToDraw; i++)
-        {
-            string currentSymbol = $"{currentLineNumber} ";
-
-            bool lastSymbol = currentXCoordinate == lastHorizontalXCoordinate;
-            if (lastSymbol)
-            {
-                currentSymbol = $"{currentLineNumber}";
-            }
-
-            Console.Write(currentSymbol);
-        }
-    }
-
     private static int DrawLineWithSpaces(
-        int currentLineNumber,
+        int currentRowNumber,
         int currentXCoordinate,
         int lastVerticalYCoordinate,
         int lastHorizontalXCoordinate,
-        int totalSymbolsInLine)
+        int totalSymbolsInRow)
     {
-        int totalAmountOfSpaces = currentLineNumber - 1;
+        int totalAmountOfSpaces = currentRowNumber - 1;
+
         DrawSpacesLeft(totalAmountOfSpaces);
 
-        DrawNumberAfterSpaces(lastHorizontalXCoordinate,
+        DrawRestOfTheSymbols(currentRowNumber,
             currentXCoordinate,
-            currentLineNumber,
-            totalAmountOfSpaces,
-            totalSymbolsInLine);
+            lastHorizontalXCoordinate,
+            totalSymbolsInRow,
+            totalAmountOfSpaces);
+
         Console.WriteLine();
 
         lastVerticalYCoordinate--;
         return lastVerticalYCoordinate;
     }
 
-    private static void DrawNumberAfterSpaces(
-        int lastHorizontalXCoordinate,
+    private static void DrawRestOfTheSymbols(
+        int currentRowNumber,
         int currentXCoordinate,
-        int currentLineNumber,
-        int totalAmountOfSpaces,
-        int totalSymbolsInLine)
+        int lastHorizontalXCoordinate,
+        int totalSymbolsInRow,
+        int totalAmountOfSpaces)
     {
-        int amountOfNumbersToDraw = totalSymbolsInLine - totalAmountOfSpaces;
+        int amountOfNumbersToDraw = totalSymbolsInRow - totalAmountOfSpaces;
 
         for (var i = 0; i < amountOfNumbersToDraw; i++)
         {
-            string currentSymbol = $"{currentLineNumber} ";
+            string currentSymbol = $"{currentRowNumber % 10} ";
 
             bool lastSymbol = currentXCoordinate == lastHorizontalXCoordinate;
             if (lastSymbol)
             {
-                currentSymbol = $"{currentLineNumber}";
+                currentSymbol = $"{currentRowNumber}";
             }
 
             Console.Write(currentSymbol);
-        }
-    }
-
-    private static void DrawRestOfTheLines(
-        int inputNumber,
-        int currentLineNumber,
-        int currentXCoordinate,
-        int lastVerticalYCoordinate)
-    {
-        int totalSymbolsInLine = inputNumber;
-        int lastHorizontalXCoordinate = inputNumber;
-
-        var itemsInOneRound = 9;
-        bool isInputMoreThanOneRound = inputNumber >= itemsInOneRound;
-
-        if (isInputMoreThanOneRound)
-        {
-            double roundsToDraw = (double) inputNumber / itemsInOneRound;
-
-            for (double currentRound = roundsToDraw; (int) Math.Abs(currentRound) > 0; currentRound--)
-            {
-                var lastVerticalYCoordinateForRound = 9;
-                int currentLineNumberInRound = currentLineNumber;
-
-                for (int currentVerticalYCoordinate = currentLineNumberInRound;
-                     currentXCoordinate <= lastHorizontalXCoordinate
-                     && currentVerticalYCoordinate <= lastVerticalYCoordinateForRound
-                     && currentLineNumber <= inputNumber;
-                     currentLineNumberInRound++, currentLineNumber++, currentXCoordinate++)
-                {
-                    DrawLineWithSpaces(currentLineNumberInRound,
-                        currentXCoordinate,
-                        lastVerticalYCoordinateForRound,
-                        lastHorizontalXCoordinate,
-                        totalSymbolsInLine);
-
-                    // if (currentLineNumberInRound > 9)
-                    // {
-                    // currentLineNumberInRound = 0;
-                    // }
-                }
-            }
-        }
-        else
-        {
-            for (int currentVerticalYCoordinate = currentLineNumber;
-                 currentXCoordinate <= lastHorizontalXCoordinate
-                 && currentVerticalYCoordinate <= lastVerticalYCoordinate && currentLineNumber <= inputNumber;
-                 currentLineNumber++, currentXCoordinate++)
-            {
-                lastVerticalYCoordinate = DrawLineWithSpaces(currentLineNumber,
-                    currentXCoordinate,
-                    lastVerticalYCoordinate,
-                    lastHorizontalXCoordinate,
-                    totalSymbolsInLine);
-            }
         }
     }
 
