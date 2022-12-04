@@ -10,52 +10,56 @@ public class Pattern
     public static string UpturnNumeralTriangle(int n)
     {
         int lastHorizontalXCoordinate = n;
-        int lastVerticalYCoordinate = n;
         int totalSymbolsInRow = lastHorizontalXCoordinate;
         var currentXCoordinate = 1;
 
         var stringBuilder = new StringBuilder();
 
-        for (var row = 1; row < n + 1; row++)
+        for (var row = 1; row <= n + 1; row++)
         {
-            int symbol = row % 10;
-            DrawLineWithSpaces(row,
-                currentXCoordinate,
-                lastVerticalYCoordinate,
-                lastHorizontalXCoordinate,
-                totalSymbolsInRow);
+            string line = DrawLineWithSpaces(row, currentXCoordinate, lastHorizontalXCoordinate, totalSymbolsInRow);
+            stringBuilder.Append(line);
 
-            stringBuilder.Append(symbol);
+            if (row < n)
+            {
+                stringBuilder.Append("\n");
+            }
         }
 
         var triangle = stringBuilder.ToString();
         return triangle;
     }
 
-    private static int DrawLineWithSpaces(
+    private static string DrawLineWithSpaces(
         int currentRowNumber,
         int currentXCoordinate,
-        int lastVerticalYCoordinate,
         int lastHorizontalXCoordinate,
         int totalSymbolsInRow)
     {
-        int totalAmountOfSpaces = currentRowNumber - 1;
-
-        DrawSpacesLeft(totalAmountOfSpaces);
-
-        DrawRestOfTheSymbols(currentRowNumber,
+        int totalAmountOfSpaces = currentRowNumber;
+        var stringBuilder = new StringBuilder();
+        stringBuilder.Append(DrawSpacesLeftOfSymbol(totalAmountOfSpaces));
+        stringBuilder.Append(DrawSymbols(currentRowNumber,
             currentXCoordinate,
             lastHorizontalXCoordinate,
             totalSymbolsInRow,
-            totalAmountOfSpaces);
+            totalAmountOfSpaces));
 
-        Console.WriteLine();
-
-        lastVerticalYCoordinate--;
-        return lastVerticalYCoordinate;
+        return stringBuilder.ToString().TrimEnd();
     }
 
-    private static void DrawRestOfTheSymbols(
+    private static string DrawSpacesLeftOfSymbol(int totalAmountOfSpaces)
+    {
+        var stringBuilder = new StringBuilder();
+        for (var spaceIndex = 1; spaceIndex <= totalAmountOfSpaces; spaceIndex++)
+        {
+            stringBuilder.Append(" ");
+        }
+
+        return stringBuilder.ToString();
+    }
+
+    private static string DrawSymbols(
         int currentRowNumber,
         int currentXCoordinate,
         int lastHorizontalXCoordinate,
@@ -63,8 +67,8 @@ public class Pattern
         int totalAmountOfSpaces)
     {
         int amountOfNumbersToDraw = totalSymbolsInRow - totalAmountOfSpaces;
-
-        for (var i = 0; i < amountOfNumbersToDraw; i++)
+        var stringBuilder = new StringBuilder();
+        for (var i = 0; i <= amountOfNumbersToDraw; i++)
         {
             string currentSymbol = $"{currentRowNumber % 10} ";
 
@@ -74,15 +78,10 @@ public class Pattern
                 currentSymbol = $"{currentRowNumber}";
             }
 
-            Console.Write(currentSymbol);
+            stringBuilder.Append(currentSymbol);
         }
-    }
 
-    private static void DrawSpacesLeft(int totalAmountOfSpaces)
-    {
-        for (var spaceIndex = 0; spaceIndex < totalAmountOfSpaces; spaceIndex++)
-        {
-            Console.Write(" ");
-        }
+        string symbols = stringBuilder.ToString().TrimEnd();
+        return symbols;
     }
 }
