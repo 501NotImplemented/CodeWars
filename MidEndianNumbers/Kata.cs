@@ -2,7 +2,7 @@
 
 using System.Text;
 
-Console.WriteLine(Kata.MidEndian(658188));
+Console.WriteLine(Kata.MidEndian(168496141));
 
 //http://catb.org/jargon/html/M/middle-endian.html
 internal class Kata
@@ -27,16 +27,28 @@ internal class Kata
 
         if (hexSplitIntoPairs.Length > 1)
         {
-            IEnumerable<int> leftIndexes = GetLeftIndexes(leftPairStartIndex, hexSplitIntoPairs.Length - 1);
-            foreach (int leftIndex in leftIndexes)
+            List<int> leftIndexes = GetLeftIndexes(leftPairStartIndex, hexSplitIntoPairs.Length - 1).ToList();
+
+            for (int i = leftIndexes.Count; i >= leftPairStartIndex; i--)
             {
+                int leftIndex = leftIndexes[i - 1];
+                Console.Write($"{leftIndex}-");
                 leftPairBuilder.Append(hexSplitIntoPairs[leftIndex]);
             }
 
+            Console.Write("0");
             IEnumerable<int> rightIndexes = GetRightIndexes(rightPairStartIndex, hexSplitIntoPairs.Length - 1);
             foreach (int rightIndex in rightIndexes)
             {
-                rightPairBuilder.Append(hexSplitIntoPairs[rightIndex]);
+                if (rightIndex < hexSplitIntoPairs.Length)
+                {
+                    Console.Write($"-{rightIndex}");
+                    rightPairBuilder.Append(hexSplitIntoPairs[rightIndex]);
+                }
+                else
+                {
+                    break;
+                }
             }
         }
 
