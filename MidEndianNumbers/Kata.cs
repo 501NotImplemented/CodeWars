@@ -2,8 +2,6 @@
 
 using System.Text;
 
-Console.WriteLine(Kata.MidEndian(168496141));
-
 //http://catb.org/jargon/html/M/middle-endian.html
 internal class Kata
 {
@@ -19,41 +17,13 @@ internal class Kata
         var middlePairIndex = 0;
         string middlePair = hexSplitIntoPairs[middlePairIndex];
 
-        var leftPairStartIndex = 1;
-        var rightPairStartIndex = 2;
-
-        var leftPairBuilder = new StringBuilder();
-        var rightPairBuilder = new StringBuilder();
-
+        var leftPair = string.Empty;
+        var rightPair = string.Empty;
         if (hexSplitIntoPairs.Length > 1)
         {
-            List<int> leftIndexes = GetLeftIndexes(leftPairStartIndex, hexSplitIntoPairs.Length - 1).ToList();
-
-            for (int i = leftIndexes.Count; i >= leftPairStartIndex; i--)
-            {
-                int leftIndex = leftIndexes[i - 1];
-                Console.Write($"{leftIndex}-");
-                leftPairBuilder.Append(hexSplitIntoPairs[leftIndex]);
-            }
-
-            Console.Write("0");
-            IEnumerable<int> rightIndexes = GetRightIndexes(rightPairStartIndex, hexSplitIntoPairs.Length - 1);
-            foreach (int rightIndex in rightIndexes)
-            {
-                if (rightIndex < hexSplitIntoPairs.Length)
-                {
-                    Console.Write($"-{rightIndex}");
-                    rightPairBuilder.Append(hexSplitIntoPairs[rightIndex]);
-                }
-                else
-                {
-                    break;
-                }
-            }
+            leftPair = GetLeftPair(hexSplitIntoPairs);
+            rightPair = GetRightPair(hexSplitIntoPairs);
         }
-
-        var leftPair = leftPairBuilder.ToString();
-        var rightPair = rightPairBuilder.ToString();
 
         midEndianBuilder.Append(leftPair);
         midEndianBuilder.Append(middlePair);
@@ -61,10 +31,6 @@ internal class Kata
 
         var midEndian = midEndianBuilder.ToString();
 
-        // 0B0A0C 658188 1-0-2
-        // 0D0B0A0C 168496141 3-1-0-2
-        // 0D0B0A0C0E 43135012110 3-1-0-2-4
-        // 96987F 9999999 1-0-2
         return midEndian;
     }
 
@@ -84,6 +50,22 @@ internal class Kata
         return result;
     }
 
+    private static string GetLeftPair(string[] input)
+    {
+        var leftPairStartIndex = 1;
+        var leftPairBuilder = new StringBuilder();
+        List<int> leftIndexes = GetLeftIndexes(leftPairStartIndex, input.Length - 1).ToList();
+
+        for (int i = leftIndexes.Count; i >= leftPairStartIndex; i--)
+        {
+            int leftIndex = leftIndexes[i - 1];
+            leftPairBuilder.Append(input[leftIndex]);
+        }
+
+        var leftPair = leftPairBuilder.ToString();
+        return leftPair;
+    }
+
     private static bool GetOdd(int number)
     {
         if (number % 2 != 0)
@@ -98,6 +80,27 @@ internal class Kata
     {
         IEnumerable<int> result = Enumerable.Range(startIndex, endIndex).Where(GetEven).Select(i => i);
         return result;
+    }
+
+    private static string GetRightPair(string[] input)
+    {
+        var rightPairStartIndex = 2;
+        var rightPairBuilder = new StringBuilder();
+        IEnumerable<int> rightIndexes = GetRightIndexes(rightPairStartIndex, input.Length - 1);
+        foreach (int rightIndex in rightIndexes)
+        {
+            if (rightIndex < input.Length)
+            {
+                rightPairBuilder.Append(input[rightIndex]);
+            }
+            else
+            {
+                break;
+            }
+        }
+
+        var rightPair = rightPairBuilder.ToString();
+        return rightPair;
     }
 
     private static void Pad0ForSingleDigits(string[] inputHex)
@@ -129,15 +132,16 @@ internal class Kata
         for (var index = 0; index < inputHex.Length; index++)
         {
             char[] initialPair = inputHex[index].ToCharArray();
-            if (initialPair.Contains('0'))
+            var zeroChar = '0';
+            if (initialPair.Contains(zeroChar))
             {
                 char initialFirstChar = initialPair[0];
 
-                if (initialFirstChar != '0')
+                if (initialFirstChar != zeroChar)
                 {
                     char[] swappedChars =
                         {
-                            '0', initialFirstChar
+                            zeroChar, initialFirstChar
                         };
 
                     inputHex[index] = new string(swappedChars);
