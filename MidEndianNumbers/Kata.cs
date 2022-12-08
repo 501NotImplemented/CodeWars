@@ -16,20 +16,21 @@ internal class Kata
         var midEndianBuilder = new StringBuilder();
         var middlePairIndex = 0;
         string middlePair = hexSplitIntoPairs[middlePairIndex];
+        var midEndian = string.Empty;
 
-        var leftPair = string.Empty;
-        var rightPair = string.Empty;
         if (hexSplitIntoPairs.Length > 1)
         {
-            leftPair = GetLeftPair(hexSplitIntoPairs);
-            rightPair = GetRightPair(hexSplitIntoPairs);
+            string leftPair = GetLeftPair(hexSplitIntoPairs);
+            midEndianBuilder.Append(leftPair);
+            midEndianBuilder.Append(middlePair);
+            string rightPair = GetRightPair(hexSplitIntoPairs);
+            midEndianBuilder.Append(rightPair);
+            midEndian = midEndianBuilder.ToString();
         }
-
-        midEndianBuilder.Append(leftPair);
-        midEndianBuilder.Append(middlePair);
-        midEndianBuilder.Append(rightPair);
-
-        var midEndian = midEndianBuilder.ToString();
+        else
+        {
+            midEndian = middlePair;
+        }
 
         return midEndian;
     }
