@@ -7,6 +7,119 @@ Console.WriteLine(Kata.MidEndian(658188));
 //http://catb.org/jargon/html/M/middle-endian.html
 internal class Kata
 {
+    public static Dictionary<string, List<int>> GetIndexes(char[] input)
+    {
+        Stack<int> evenIndexes = GetEvenIndexes(input);
+        Stack<int> oddIndexes = GetOddIndexes(input);
+        Queue<int> reversedOddQueue = new();
+        Queue<int> reversedEvenQueue = new();
+        Dictionary<string, List<int>> indexes = new()
+                                                    {
+                                                        {
+                                                            "Left", new List<int>()
+                                                        },
+                                                        {
+                                                            "Right", new List<int>()
+                                                        }
+                                                    };
+        IEnumerable<int> reversedEvenCollection = evenIndexes.Reverse();
+        reversedEvenQueue = new Queue<int>(reversedEvenCollection);
+
+        for (var i = 0; reversedEvenQueue.Count > 0; i++)
+        {
+            if (IsOdd(i))
+            {
+                indexes["Right"].Add(reversedEvenQueue.Dequeue());
+
+                if (reversedEvenQueue.Count == 0)
+                {
+                    break;
+                }
+
+                indexes["Left"].Add(oddIndexes.Pop());
+            }
+            else
+            {
+                indexes["Right"].Add(oddIndexes.Pop());
+                indexes["Left"].Add(reversedEvenQueue.Dequeue());
+            }
+
+            // if (evenIndexes.Count > 0)
+            // {
+            // if (IsOdd(i))
+            // {
+            // if (reversedOddQueue.Count > 0)
+            // {
+            // indexes["Left"].Add(reversedOddQueue.Dequeue());
+            // indexes["Right"].Add(evenIndexes.Pop());
+            // }
+            // else
+            // {
+            // IEnumerable<int> reversedEvenCollection = evenIndexes.Reverse();
+            // reversedEvenQueue = new Queue<int>(reversedEvenCollection);
+            // indexes["Left"].Add(reversedEvenQueue.Dequeue());
+            // indexes["Right"].Add(reversedEvenQueue.Dequeue());
+            // }
+            // }
+            // else
+            // {
+            // if (i == 0 && reversedOddQueue.Count == 0)
+            // {
+            // indexes["Right"].Add(oddIndexes.Pop());
+            // }
+            // else
+            // {
+            // // indexes["Right"].Add(oddIndexes.Pop());
+            // if (reversedOddQueue.Count > 0)
+            // {
+            // indexes["Right"].Add(reversedOddQueue.Dequeue());
+            // }
+            // }
+
+            // if (i == 0)
+            // {
+            // indexes["Left"].Add(oddIndexes.Pop());
+            // }
+            // else
+            // {
+            // IEnumerable<int> reversedOddCollection = oddIndexes.Reverse();
+            // reversedOddQueue = new Queue<int>(reversedOddCollection);
+            // indexes["Left"].Add(reversedOddQueue.Dequeue());
+            // }
+            // }
+            // }
+
+            // else
+            // {
+            // if (reversedOddQueue.Count > 0)
+            // {
+            // indexes["Left"].Add(reversedOddQueue.Dequeue());
+            // }
+            // else
+            // {
+            // break;
+            // }
+            // }
+        }
+
+        if (oddIndexes.Count > 0)
+        {
+            for (var i = 0; oddIndexes.Count > 0; i++)
+            {
+                indexes["Left"].Add(oddIndexes.Pop());
+
+                if (oddIndexes.Count == 0)
+                {
+                    break;
+                }
+
+                indexes["Right"].Add(oddIndexes.Pop());
+            }
+        }
+
+        return indexes;
+    }
+
     public static string MidEndian(long n)
     {
         var hexValueInBigEndian = n.ToString("X");
@@ -38,11 +151,6 @@ internal class Kata
             List<int> rightIndexes = indexes["Right"];
             string rightPair = GetRightPair(hexChars, rightIndexes);
             midEndianBuilder.Append(rightPair);
-
-            // 69867F
-            // 0D0B0A0C
-            // 0D0B0A0C0E
-            // 0B0A0C 658188
         }
         else
         {
@@ -53,11 +161,6 @@ internal class Kata
         }
 
         midEndian = midEndianBuilder.ToString();
-
-        // 2-3-0-1-4-5 658188
-        // 2-3-0-1-4-5 9999999
-        // 6-7-2-3-0-1-4-5 168496141
-        // 6-7-2-3-0-1-4-5-8-9 43135012110
         return midEndian;
     }
 
@@ -67,91 +170,6 @@ internal class Kata
         List<int> result = Enumerable.Range(1, input.Length - 1).Where(IsEven).Select(i => i).ToList();
         result.ForEach(evenIndexesStack.Push);
         return evenIndexesStack;
-    }
-
-    private static Dictionary<string, List<int>> GetIndexes(char[] input)
-    {
-        Stack<int> evenIndexes = GetEvenIndexes(input);
-        Stack<int> oddIndexes = GetOddIndexes(input);
-        Queue<int> reversedOddQue = new();
-        Dictionary<string, List<int>> indexes = new()
-                                                    {
-                                                        {
-                                                            "Left", new List<int>()
-                                                        },
-                                                        {
-                                                            "Right", new List<int>()
-                                                        }
-                                                    };
-        if (IsEven(input.Length))
-        {
-            Console.WriteLine($"Input length is {input.Length}");
-            for (var i = 0; i < input.Length; i++)
-            {
-                if (evenIndexes.Count > 0)
-                {
-                    if (IsOdd(i))
-                    {
-                        IEnumerable<int> reversedOddCollection = oddIndexes.Reverse();
-                        reversedOddQue = new Queue<int>(reversedOddCollection);
-
-                        indexes["Left"].Add(reversedOddQue.Dequeue());
-                        indexes["Right"].Add(evenIndexes.Pop());
-                    }
-                    else
-                    {
-                        indexes["Left"].Add(evenIndexes.Pop());
-                        if (i == 0 && reversedOddQue.Count == 0)
-                        {
-                            indexes["Right"].Add(oddIndexes.Pop());
-                        }
-                        else
-                        {
-                            indexes["Right"].Add(reversedOddQue.Dequeue());
-                        }
-                    }
-                }
-                else
-                {
-                    if (reversedOddQue.Count > 0)
-                    {
-                        indexes["Left"].Add(reversedOddQue.Dequeue());
-                    }
-                    else
-                    {
-                        break;
-                    }
-                }
-            }
-        }
-        else
-        {
-            throw new NotImplementedException();
-        }
-
-        // 6-7-2-3-0-1-4-5 168496141
-        // 2-3-0-1-4-5 658188
-        // 6-7-2-3-0-1-4-5-8-9 43135012110
-        List<int> expectedRightIndexes = new()
-                                             {
-                                                 1,
-                                                 4,
-                                                 5,
-                                                 8,
-                                                 9
-                                             };
-
-        List<int> actualRightIndexes = indexes["Right"];
-
-        // CollectionAssert.AreEqual(expectedRightIndexes, actualRightIndexes);
-        List<int> expectedLeftIndexes = new()
-                                            {
-                                                6, 7, 2, 3
-                                            };
-        List<int> actualLeftIndexes = indexes["Left"];
-
-        // CollectionAssert.AreEqual(expectedLeftIndexes, actualLeftIndexes);
-        return indexes;
     }
 
     private static string GetLeftPair(char[] input, List<int> leftIndexes)
