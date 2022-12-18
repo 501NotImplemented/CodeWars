@@ -96,10 +96,10 @@ internal class Kata
                     oddIndexes = new Stack<int>(reversedOddQue);
                     indexes["Left"].Add(reversedOddQue.Dequeue());
 
-                    IEnumerable<int> reversedEvenCollection = evenIndexes.Reverse();
-                    Queue<int> reversedEvenQue = new(reversedEvenCollection);
-                    evenIndexes = new Stack<int>(reversedEvenQue);
-                    indexes["Right"].Add(reversedEvenQue.Dequeue());
+                    // IEnumerable<int> reversedEvenCollection = evenIndexes.Reverse();
+                    // Queue<int> reversedEvenQue = new(reversedEvenCollection);
+                    // evenIndexes = new Stack<int>(reversedEvenQue);
+                    indexes["Right"].Add(evenIndexes.Pop());
                 }
             }
             else
