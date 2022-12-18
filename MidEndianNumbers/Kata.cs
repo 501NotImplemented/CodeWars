@@ -33,7 +33,6 @@ internal class Kata
 
                 if (reversedEvenQueue.Count == 0)
                 {
-                    Console.WriteLine($"Odd indexes left: {oddIndexes.Count}");
                     break;
                 }
 
@@ -54,8 +53,6 @@ internal class Kata
 
                 if (oddIndexes.Count == 0)
                 {
-                    Console.WriteLine($"Even indexes left: {reversedEvenQueue.Count}");
-                    Console.WriteLine($"Odd indexes left: {oddIndexes.Count}");
                     break;
                 }
 
