@@ -20,6 +20,7 @@ internal class Tests
     {
         Dictionary<string, List<int>> allIndexes = Kata.GetIndexes(input);
         List<int> actualLeftIndexes = allIndexes["Left"];
+
         CollectionAssert.AreEqual(expectedLeftPart, actualLeftIndexes, $"Incorrect left indexes for {number}");
     }
 
@@ -30,5 +31,21 @@ internal class Tests
         Dictionary<string, List<int>> allIndexes = Kata.GetIndexes(input);
         List<int> actualRightIndexes = allIndexes["Right"];
         CollectionAssert.AreEqual(expectedRightPart, actualRightIndexes, $"Incorrect right indexes for {number}");
+    }
+
+    [Test]
+    public void SortLeftIndexesPerformsSorting()
+    {
+        List<int> input = new()
+                              {
+                                  2, 3, 6, 7
+                              };
+
+        List<int> expected = new()
+                                 {
+                                     6, 7, 2, 3
+                                 };
+        List<int> actual = Kata.SortLeftIndexes(input);
+        CollectionAssert.AreEqual(expected, actual);
     }
 }

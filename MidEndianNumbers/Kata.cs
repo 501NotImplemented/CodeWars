@@ -11,7 +11,7 @@ internal class Kata
     {
         Stack<int> evenIndexes = GetEvenIndexes(input);
         Stack<int> oddIndexes = GetOddIndexes(input);
-        Queue<int> reversedOddQueue = new();
+
         Queue<int> reversedEvenQueue = new();
         Dictionary<string, List<int>> indexes = new()
                                                     {
@@ -33,6 +33,7 @@ internal class Kata
 
                 if (reversedEvenQueue.Count == 0)
                 {
+                    Console.WriteLine($"Odd indexes left: {oddIndexes.Count}");
                     break;
                 }
 
@@ -43,63 +44,6 @@ internal class Kata
                 indexes["Right"].Add(oddIndexes.Pop());
                 indexes["Left"].Add(reversedEvenQueue.Dequeue());
             }
-
-            // if (evenIndexes.Count > 0)
-            // {
-            // if (IsOdd(i))
-            // {
-            // if (reversedOddQueue.Count > 0)
-            // {
-            // indexes["Left"].Add(reversedOddQueue.Dequeue());
-            // indexes["Right"].Add(evenIndexes.Pop());
-            // }
-            // else
-            // {
-            // IEnumerable<int> reversedEvenCollection = evenIndexes.Reverse();
-            // reversedEvenQueue = new Queue<int>(reversedEvenCollection);
-            // indexes["Left"].Add(reversedEvenQueue.Dequeue());
-            // indexes["Right"].Add(reversedEvenQueue.Dequeue());
-            // }
-            // }
-            // else
-            // {
-            // if (i == 0 && reversedOddQueue.Count == 0)
-            // {
-            // indexes["Right"].Add(oddIndexes.Pop());
-            // }
-            // else
-            // {
-            // // indexes["Right"].Add(oddIndexes.Pop());
-            // if (reversedOddQueue.Count > 0)
-            // {
-            // indexes["Right"].Add(reversedOddQueue.Dequeue());
-            // }
-            // }
-
-            // if (i == 0)
-            // {
-            // indexes["Left"].Add(oddIndexes.Pop());
-            // }
-            // else
-            // {
-            // IEnumerable<int> reversedOddCollection = oddIndexes.Reverse();
-            // reversedOddQueue = new Queue<int>(reversedOddCollection);
-            // indexes["Left"].Add(reversedOddQueue.Dequeue());
-            // }
-            // }
-            // }
-
-            // else
-            // {
-            // if (reversedOddQueue.Count > 0)
-            // {
-            // indexes["Left"].Add(reversedOddQueue.Dequeue());
-            // }
-            // else
-            // {
-            // break;
-            // }
-            // }
         }
 
         if (oddIndexes.Count > 0)
@@ -110,11 +54,18 @@ internal class Kata
 
                 if (oddIndexes.Count == 0)
                 {
+                    Console.WriteLine($"Even indexes left: {reversedEvenQueue.Count}");
+                    Console.WriteLine($"Odd indexes left: {oddIndexes.Count}");
                     break;
                 }
 
                 indexes["Right"].Add(oddIndexes.Pop());
             }
+        }
+
+        if (indexes["Left"].Count > 2)
+        {
+            indexes["Left"] = SortLeftIndexes(indexes["Left"]);
         }
 
         return indexes;
@@ -162,6 +113,20 @@ internal class Kata
 
         midEndian = midEndianBuilder.ToString();
         return midEndian;
+    }
+
+    public static List<int> SortLeftIndexes(List<int> input)
+    {
+        List<int> tempList = input;
+        var nextIndex = 2;
+
+        for (var currentIndex = 0; nextIndex < input.Count; currentIndex++, nextIndex++)
+        {
+            (tempList[currentIndex], tempList[nextIndex]) = (tempList[nextIndex], tempList[currentIndex]);
+        }
+
+        List<int> sortedIndexes = tempList;
+        return sortedIndexes;
     }
 
     private static Stack<int> GetEvenIndexes(char[] input)
