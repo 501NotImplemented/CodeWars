@@ -1,11 +1,8 @@
-﻿// See https://aka.ms/new-console-template for more information
+﻿using System.Text;
 
-using System.Text;
+namespace MidEndianNumbers;
 
-Console.WriteLine(Kata.MidEndian(658188));
-
-//http://catb.org/jargon/html/M/middle-endian.html
-internal class Kata
+public static class Kata
 {
     public static Dictionary<string, List<int>> GetIndexes(List<string> input, int indexOfMostSignificantPair)
     {
@@ -47,7 +44,7 @@ internal class Kata
         IEnumerable<int> reversedEvenCollection = evenIndexesStack.Reverse();
         reversedEvenQueue = new Queue<int>(reversedEvenCollection);
 
-        for (var i = 0; i <= input.Count; i++)
+        for (var i = 0; i < input.Count; i++)
         {
             if (IsOdd(i))
             {
@@ -92,8 +89,7 @@ internal class Kata
 
         if (indexes["Left"].Count > 2)
         {
-            // Left
-            indexes["Left"] = SortLeftIndexes(indexes["Left"]); // Left
+            indexes["Left"] = SortLeftIndexes(indexes["Left"]);
         }
 
         return indexes;
@@ -101,47 +97,17 @@ internal class Kata
 
     public static string MidEndian(long n)
     {
-        List<byte> convertedBytes = BitConverter.GetBytes(n).ToList();
-        int indexOfMostSignificantPair = convertedBytes.IndexOf(convertedBytes.Max());
+        List<byte> convertedBytes = BitConverter.GetBytes(n).Where(x => x > 0).ToList();
+        int indexOfMostSignificantPair = GetInDexOfMostSignificantByte(convertedBytes);
 
-        List<string> hexSplitIntoPairs = new();
+        List<string> hexSplitIntoPairs = SplitBytesIntoHexPairs(convertedBytes);
 
-        bool allBytesAre0 = !convertedBytes.Any(x => x > 0);
-
-        if (allBytesAre0)
-        {
-            var hexValue = convertedBytes.First().ToString("X");
-            hexValue = Pad0ForSingleDigit(hexValue);
-            hexSplitIntoPairs.Add(hexValue);
-        }
-        else
-        {
-            foreach (byte convertedByteIntByte in convertedBytes.Where(x => x > 0))
-            {
-                var hexValue = convertedByteIntByte.ToString("X");
-                hexValue = Pad0ForSingleDigit(hexValue);
-                hexSplitIntoPairs.Add(hexValue);
-            }
-        }
-
-        var midEndianBuilder = new StringBuilder();
-
-        int middleCharIndex = indexOfMostSignificantPair;
-        Console.WriteLine($"Middle char index is {middleCharIndex}");
-        string middlePair;
-
-        if (middleCharIndex == 0)
-        {
-            middlePair = Convert.ToString(hexSplitIntoPairs.First());
-        }
-        else
-        {
-            middlePair = Convert.ToString(hexSplitIntoPairs[middleCharIndex]);
-        }
+        string middlePair = GetMiddlePair(indexOfMostSignificantPair, hexSplitIntoPairs);
 
         string midEndian;
+        var midEndianBuilder = new StringBuilder();
 
-        if (allBytesAre0)
+        if (!convertedBytes.Any(x => x > 0))
         {
             midEndianBuilder.Append(hexSplitIntoPairs[indexOfMostSignificantPair]);
         }
@@ -157,7 +123,7 @@ internal class Kata
             string leftPair = GetLeftPair(hexSplitIntoPairs, leftIndexes);
             midEndianBuilder.Append(leftPair);
 
-            Console.Write(middleCharIndex);
+            Console.Write(indexOfMostSignificantPair);
             midEndianBuilder.Append(middlePair);
 
             List<int> rightIndexes = indexes["Right"];
@@ -189,6 +155,19 @@ internal class Kata
         return result;
     }
 
+    private static int GetInDexOfMostSignificantByte(List<byte> convertedBytes)
+    {
+        if (convertedBytes.Count == 0)
+        {
+            convertedBytes.Add(0);
+        }
+
+        byte mostSignificantByte = convertedBytes.Max();
+        int indexOfMostSignificantPair = convertedBytes.IndexOf(mostSignificantByte);
+        Console.WriteLine($"Index of most significant byte is {indexOfMostSignificantPair}");
+        return indexOfMostSignificantPair;
+    }
+
     private static string GetLeftPair(List<string> input, List<int> leftIndexes)
     {
         var leftPairBuilder = new StringBuilder();
@@ -203,6 +182,24 @@ internal class Kata
 
         var leftPair = leftPairBuilder.ToString();
         return leftPair;
+    }
+
+    private static string GetMiddlePair(int indexOfMostSignificantPair, List<string> hexSplitIntoPairs)
+    {
+        string middlePair;
+
+        if (indexOfMostSignificantPair == 0)
+        {
+            middlePair = Convert.ToString(hexSplitIntoPairs.First());
+        }
+        else
+        {
+            middlePair = Convert.ToString(hexSplitIntoPairs[indexOfMostSignificantPair]);
+        }
+
+        Console.WriteLine($"Most significant byte pair is {middlePair}");
+
+        return middlePair;
     }
 
     private static List<int> GetOddIndexes(List<string> input)
@@ -263,47 +260,28 @@ internal class Kata
         return input;
     }
 
-    private static void Pad0ForSingleDigits(string[] inputHex)
+    private static List<string> SplitBytesIntoHexPairs(List<byte> convertedBytes)
     {
-        for (var index = 0; index < inputHex.Length; index++)
+        List<string> hexSplitIntoPairs = new();
+
+        bool allBytesAre0 = !convertedBytes.Any(x => x > 0);
+
+        if (allBytesAre0)
         {
-            string pair = inputHex[index];
-            inputHex[index] = Pad0ForSingleDigit(pair);
+            var hexValue = convertedBytes.First().ToString("X");
+            hexValue = Pad0ForSingleDigit(hexValue);
+            hexSplitIntoPairs.Add(hexValue);
         }
-    }
-
-    private static string[] SplitString(string input)
-    {
-        var output = new string[input.Length / 2 + (input.Length % 2 == 0 ? 0 : 1)];
-
-        for (var i = 0; i < output.Length; i++)
+        else
         {
-            output[i] = input.Substring(i * 2, i * 2 + 2 > input.Length ? 1 : 2);
-        }
-
-        return output;
-    }
-
-    private static void Swap0AndAddress(string[] inputHex)
-    {
-        for (var index = 0; index < inputHex.Length; index++)
-        {
-            char[] initialPair = inputHex[index].ToCharArray();
-            var zeroChar = '0';
-            if (initialPair.Contains(zeroChar))
+            foreach (byte convertedByteIntByte in convertedBytes.Where(x => x > 0))
             {
-                char initialFirstChar = initialPair[0];
-
-                if (initialFirstChar != zeroChar)
-                {
-                    char[] swappedChars =
-                        {
-                            zeroChar, initialFirstChar
-                        };
-
-                    inputHex[index] = new string(swappedChars);
-                }
+                var hexValue = convertedByteIntByte.ToString("X");
+                hexValue = Pad0ForSingleDigit(hexValue);
+                hexSplitIntoPairs.Add(hexValue);
             }
         }
+
+        return hexSplitIntoPairs;
     }
 }
