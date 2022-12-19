@@ -7,12 +7,12 @@ Console.WriteLine(Kata.MidEndian(658188));
 //http://catb.org/jargon/html/M/middle-endian.html
 internal class Kata
 {
-    public static Dictionary<string, List<int>> GetIndexes(char[] input)
+    public static Dictionary<string, List<int>> GetIndexes(List<string> input, int indexOfMostSignificantPair)
     {
-        Stack<int> evenIndexes = GetEvenIndexes(input);
-        Stack<int> oddIndexes = GetOddIndexes(input);
+        bool indexOfMostSignificantPairIsEven = IsEven(indexOfMostSignificantPair);
+        List<int> evenIndexesList = GetEvenIndexes(input);
+        List<int> oddIndexesList = GetOddIndexes(input);
 
-        Queue<int> reversedEvenQueue = new();
         Dictionary<string, List<int>> indexes = new()
                                                     {
                                                         {
@@ -20,49 +20,80 @@ internal class Kata
                                                         },
                                                         {
                                                             "Right", new List<int>()
+                                                        },
+                                                        {
+                                                            "Middle", new List<int>()
                                                         }
                                                     };
-        IEnumerable<int> reversedEvenCollection = evenIndexes.Reverse();
+        indexes["Middle"].Add(indexOfMostSignificantPair);
+
+        if (indexOfMostSignificantPairIsEven)
+        {
+            evenIndexesList.Remove(indexOfMostSignificantPair);
+        }
+        else
+        {
+            oddIndexesList.Remove(indexOfMostSignificantPair);
+        }
+
+        Stack<int> evenIndexesStack = new();
+        Stack<int> oddIndexesStack = new();
+
+        evenIndexesList.ForEach(evenIndexesStack.Push);
+        oddIndexesList.ForEach(oddIndexesStack.Push);
+
+        Queue<int> reversedEvenQueue = new();
+
+        IEnumerable<int> reversedEvenCollection = evenIndexesStack.Reverse();
         reversedEvenQueue = new Queue<int>(reversedEvenCollection);
 
-        for (var i = 0; reversedEvenQueue.Count > 0; i++)
+        for (var i = 0; i <= input.Count; i++)
         {
             if (IsOdd(i))
             {
-                indexes["Right"].Add(reversedEvenQueue.Dequeue());
-
-                if (reversedEvenQueue.Count == 0)
+                if (reversedEvenQueue.Count > 0)
                 {
-                    break;
+                    indexes["Left"].Add(reversedEvenQueue.Dequeue()); // Right
                 }
 
-                indexes["Left"].Add(oddIndexes.Pop());
+                if (oddIndexesStack.Count > 0)
+                {
+                    indexes["Right"].Add(oddIndexesStack.Pop()); // Left
+                }
             }
             else
             {
-                indexes["Right"].Add(oddIndexes.Pop());
-                indexes["Left"].Add(reversedEvenQueue.Dequeue());
+                if (oddIndexesStack.Count > 0)
+                {
+                    indexes["Left"].Add(oddIndexesStack.Pop()); // Right
+                }
+
+                if (reversedEvenQueue.Count > 0)
+                {
+                    indexes["Right"].Add(reversedEvenQueue.Dequeue()); // Left
+                }
             }
         }
 
-        if (oddIndexes.Count > 0)
+        if (oddIndexesStack.Count > 0)
         {
-            for (var i = 0; oddIndexes.Count > 0; i++)
+            for (var i = 0; oddIndexesStack.Count > 0; i++)
             {
-                indexes["Left"].Add(oddIndexes.Pop());
+                indexes["Right"].Add(oddIndexesStack.Pop()); // Left
 
-                if (oddIndexes.Count == 0)
+                if (oddIndexesStack.Count == 0)
                 {
                     break;
                 }
 
-                indexes["Right"].Add(oddIndexes.Pop());
+                indexes["Left"].Add(oddIndexesStack.Pop()); // Right
             }
         }
 
         if (indexes["Left"].Count > 2)
         {
-            indexes["Left"] = SortLeftIndexes(indexes["Left"]);
+            // Left
+            indexes["Left"] = SortLeftIndexes(indexes["Left"]); // Left
         }
 
         return indexes;
@@ -70,42 +101,68 @@ internal class Kata
 
     public static string MidEndian(long n)
     {
-        var hexValueInBigEndian = n.ToString("X");
-        string[] hexSplitIntoPairs = SplitString(hexValueInBigEndian);
+        List<byte> convertedBytes = BitConverter.GetBytes(n).ToList();
+        int indexOfMostSignificantPair = convertedBytes.IndexOf(convertedBytes.Max());
 
-        Pad0ForSingleDigits(hexSplitIntoPairs);
-        Swap0AndAddress(hexSplitIntoPairs);
+        List<string> hexSplitIntoPairs = new();
 
-        var midEndianBuilder = new StringBuilder();
-        char[] hexChars = string.Concat(hexSplitIntoPairs).ToCharArray();
-        var middleCharIndex = 0;
-        Console.WriteLine($"Middle char index is {middleCharIndex}");
-        var middleChar = Convert.ToString(hexChars[middleCharIndex]);
+        bool allBytesAre0 = !convertedBytes.Any(x => x > 0);
 
-        string midEndian;
-
-        if (hexChars.Length > 2)
+        if (allBytesAre0)
         {
-            Dictionary<string, List<int>> indexes = GetIndexes(hexChars);
-
-            List<int> leftIndexes = indexes["Left"];
-            string leftPair = GetLeftPair(hexChars, leftIndexes);
-
-            midEndianBuilder.Append(leftPair);
-
-            Console.Write(middleCharIndex);
-            midEndianBuilder.Append(middleChar);
-
-            List<int> rightIndexes = indexes["Right"];
-            string rightPair = GetRightPair(hexChars, rightIndexes);
-            midEndianBuilder.Append(rightPair);
+            var hexValue = convertedBytes.First().ToString("X");
+            hexValue = Pad0ForSingleDigit(hexValue);
+            hexSplitIntoPairs.Add(hexValue);
         }
         else
         {
-            foreach (char hexChar in hexChars)
+            foreach (byte convertedByteIntByte in convertedBytes.Where(x => x > 0))
             {
-                midEndianBuilder.Append(hexChar);
+                var hexValue = convertedByteIntByte.ToString("X");
+                hexValue = Pad0ForSingleDigit(hexValue);
+                hexSplitIntoPairs.Add(hexValue);
             }
+        }
+
+        var midEndianBuilder = new StringBuilder();
+
+        int middleCharIndex = indexOfMostSignificantPair;
+        Console.WriteLine($"Middle char index is {middleCharIndex}");
+        string middlePair;
+
+        if (middleCharIndex == 0)
+        {
+            middlePair = Convert.ToString(hexSplitIntoPairs.First());
+        }
+        else
+        {
+            middlePair = Convert.ToString(hexSplitIntoPairs[middleCharIndex]);
+        }
+
+        string midEndian;
+
+        if (allBytesAre0)
+        {
+            midEndianBuilder.Append(hexSplitIntoPairs[indexOfMostSignificantPair]);
+        }
+        else
+        {
+            if (indexOfMostSignificantPair == 0 && hexSplitIntoPairs.Count == 2)
+            {
+                return hexSplitIntoPairs[0] + hexSplitIntoPairs[1];
+            }
+
+            Dictionary<string, List<int>> indexes = GetIndexes(hexSplitIntoPairs, indexOfMostSignificantPair);
+            List<int> leftIndexes = indexes["Left"];
+            string leftPair = GetLeftPair(hexSplitIntoPairs, leftIndexes);
+            midEndianBuilder.Append(leftPair);
+
+            Console.Write(middleCharIndex);
+            midEndianBuilder.Append(middlePair);
+
+            List<int> rightIndexes = indexes["Right"];
+            string rightPair = GetRightPair(hexSplitIntoPairs, rightIndexes);
+            midEndianBuilder.Append(rightPair);
         }
 
         midEndian = midEndianBuilder.ToString();
@@ -126,15 +183,13 @@ internal class Kata
         return sortedIndexes;
     }
 
-    private static Stack<int> GetEvenIndexes(char[] input)
+    private static List<int> GetEvenIndexes(List<string> input)
     {
-        Stack<int> evenIndexesStack = new();
-        List<int> result = Enumerable.Range(1, input.Length - 1).Where(IsEven).Select(i => i).ToList();
-        result.ForEach(evenIndexesStack.Push);
-        return evenIndexesStack;
+        List<int> result = Enumerable.Range(0, input.Count).Where(IsEven).Select(i => i).ToList();
+        return result;
     }
 
-    private static string GetLeftPair(char[] input, List<int> leftIndexes)
+    private static string GetLeftPair(List<string> input, List<int> leftIndexes)
     {
         var leftPairBuilder = new StringBuilder();
 
@@ -142,7 +197,7 @@ internal class Kata
         {
             int leftIndex = leftIndexes[i];
             Console.Write($"{leftIndex}-");
-            char value = input[leftIndex];
+            string value = input[leftIndex];
             leftPairBuilder.Append(value);
         }
 
@@ -150,21 +205,20 @@ internal class Kata
         return leftPair;
     }
 
-    private static Stack<int> GetOddIndexes(char[] input)
+    private static List<int> GetOddIndexes(List<string> input)
     {
-        Stack<int> oddIndexesStack = new();
-        List<int> oddIndexList = Enumerable.Range(1, input.Length - 1).Where(IsOdd).Select(i => i).Reverse().ToList();
-        oddIndexList.ForEach(oddIndexesStack.Push);
-        return oddIndexesStack;
+        List<int> oddIndexList = Enumerable.Range(0, input.Count).Where(IsOdd).Select(i => i).Reverse().ToList();
+
+        return oddIndexList;
     }
 
-    private static string GetRightPair(char[] input, List<int> rightIndexes)
+    private static string GetRightPair(List<string> input, List<int> rightIndexes)
     {
         var rightPairBuilder = new StringBuilder();
 
         foreach (int rightIndex in rightIndexes)
         {
-            if (rightIndex < input.Length)
+            if (rightIndex < input.Count)
             {
                 Console.Write($"-{rightIndex}");
                 rightPairBuilder.Append(input[rightIndex]);
@@ -199,15 +253,22 @@ internal class Kata
         return false;
     }
 
+    private static string Pad0ForSingleDigit(string input)
+    {
+        if (input.Length == 1)
+        {
+            input = $"0{input}";
+        }
+
+        return input;
+    }
+
     private static void Pad0ForSingleDigits(string[] inputHex)
     {
         for (var index = 0; index < inputHex.Length; index++)
         {
             string pair = inputHex[index];
-            if (pair.Length == 1)
-            {
-                inputHex[index] = $"0{pair}";
-            }
+            inputHex[index] = Pad0ForSingleDigit(pair);
         }
     }
 

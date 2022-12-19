@@ -12,9 +12,14 @@ namespace MidEndianNumbers.Tests
                                      {
                                          1, 4, 5
                                      },
-                                 new[]
+                                 new List<string>
                                      {
-                                         '0', 'A', '0', 'B', '0', 'C'
+                                         "0",
+                                         "A",
+                                         "0",
+                                         "B",
+                                         "0",
+                                         "C"
                                      },
                                  658188
                              };
@@ -25,9 +30,14 @@ namespace MidEndianNumbers.Tests
                                      {
                                          1, 4, 5
                                      },
-                                 new[]
+                                 new List<string>
                                      {
-                                         '9', '8', '9', '6', '7', 'F'
+                                         "9",
+                                         "8",
+                                         "9",
+                                         "6",
+                                         "7",
+                                         "F"
                                      },
                                  9999999
                              };
@@ -37,9 +47,16 @@ namespace MidEndianNumbers.Tests
                                      {
                                          1, 4, 5
                                      },
-                                 new[]
+                                 new List<string>
                                      {
-                                         '0', 'A', '0', 'B', '0', 'C', '0', 'D'
+                                         "0",
+                                         "A",
+                                         "0",
+                                         "B",
+                                         "0",
+                                         "C",
+                                         "0",
+                                         "D"
                                      },
                                  168496141
                              };
@@ -53,9 +70,18 @@ namespace MidEndianNumbers.Tests
                                          8,
                                          9
                                      },
-                                 new[]
+                                 new List<string>
                                      {
-                                         '0', 'A', '0', 'B', '0', 'C', '0', 'D', '0', 'E'
+                                         "0",
+                                         "A",
+                                         "0",
+                                         "B",
+                                         "0",
+                                         "C",
+                                         "0",
+                                         "D",
+                                         "0",
+                                         "E"
                                      },
                                  43135012110
                              };

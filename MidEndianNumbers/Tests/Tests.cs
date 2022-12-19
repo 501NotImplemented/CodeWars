@@ -19,9 +19,9 @@ internal class Tests
 
     [Test]
     [TestCaseSource(typeof(LeftIndexCases))]
-    public void GetIndexesReturnsCorrectLeftPart(List<int> expectedLeftPart, char[] input, long number)
+    public void GetIndexesReturnsCorrectLeftPart(List<int> expectedLeftPart, List<string> input, long number)
     {
-        Dictionary<string, List<int>> allIndexes = Kata.GetIndexes(input);
+        Dictionary<string, List<int>> allIndexes = Kata.GetIndexes(input, 0);
         List<int> actualLeftIndexes = allIndexes["Left"];
 
         CollectionAssert.AreEqual(expectedLeftPart, actualLeftIndexes, $"Incorrect left indexes for {number}");
@@ -29,9 +29,9 @@ internal class Tests
 
     [Test]
     [TestCaseSource(typeof(RightIndexCases))]
-    public void GetIndexesReturnsCorrectRightPart(List<int> expectedRightPart, char[] input, long number)
+    public void GetIndexesReturnsCorrectRightPart(List<int> expectedRightPart, List<string> input, long number)
     {
-        Dictionary<string, List<int>> allIndexes = Kata.GetIndexes(input);
+        Dictionary<string, List<int>> allIndexes = Kata.GetIndexes(input, 0);
         List<int> actualRightIndexes = allIndexes["Right"];
         CollectionAssert.AreEqual(expectedRightPart, actualRightIndexes, $"Incorrect right indexes for {number}");
     }
