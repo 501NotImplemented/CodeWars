@@ -12,11 +12,10 @@ namespace MidEndianNumbers.Tests.Tests
                                              {
                                                  1, 4, 5
                                              },
-                                 new List<string>
-                                     {
-                                         "0C", "0B", "0A"
-                                     },
-                                 0
+                                 "0A", new List<string>
+                                           {
+                                               "0C", "0B", "0A"
+                                           }
                              };
 
             yield return new object[]

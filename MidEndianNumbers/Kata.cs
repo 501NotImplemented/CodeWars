@@ -4,6 +4,11 @@ namespace MidEndianNumbers;
 
 public static class Kata
 {
+    public static List<byte> GetConvertedBytes(long input)
+    {
+        return BitConverter.GetBytes(input).Distinct().ToList();
+    }
+
     public static Dictionary<string, List<int>> GetIndexes(List<string> input, int indexOfMostSignificantPair)
     {
         bool indexOfMostSignificantPairIsEven = IsEven(indexOfMostSignificantPair);
@@ -95,10 +100,42 @@ public static class Kata
         return indexes;
     }
 
+    public static int GetIndexOfMostSignificantByte(List<byte> convertedBytes)
+    {
+        Console.WriteLine("Converted bytes:");
+        for (var i = 0; i < convertedBytes.Count; i++)
+        {
+            Console.WriteLine($"Byte {convertedBytes[i]} has index {i}");
+        }
+
+        byte mostSignificantByte = convertedBytes.Max();
+        int indexOfMostSignificantPair = convertedBytes.IndexOf(mostSignificantByte);
+        Console.WriteLine($"Index of most significant byte is {indexOfMostSignificantPair}");
+        return indexOfMostSignificantPair;
+    }
+
+    public static string GetMiddlePair(int indexOfMostSignificantPair, List<string> hexSplitIntoPairs)
+    {
+        string middlePair;
+
+        if (indexOfMostSignificantPair == 0)
+        {
+            middlePair = Convert.ToString(hexSplitIntoPairs.First());
+        }
+        else
+        {
+            middlePair = Convert.ToString(hexSplitIntoPairs[indexOfMostSignificantPair]);
+        }
+
+        Console.WriteLine($"Most significant byte pair is {middlePair}");
+
+        return middlePair;
+    }
+
     public static string MidEndian(long n)
     {
-        List<byte> convertedBytes = BitConverter.GetBytes(n).Where(x => x > 0).ToList();
-        int indexOfMostSignificantPair = GetInDexOfMostSignificantByte(convertedBytes);
+        List<byte> convertedBytes = GetConvertedBytes(n);
+        int indexOfMostSignificantPair = GetIndexOfMostSignificantByte(convertedBytes);
 
         List<string> hexSplitIntoPairs = SplitBytesIntoHexPairs(convertedBytes);
 
@@ -155,19 +192,6 @@ public static class Kata
         return result;
     }
 
-    private static int GetInDexOfMostSignificantByte(List<byte> convertedBytes)
-    {
-        if (convertedBytes.Count == 0)
-        {
-            convertedBytes.Add(0);
-        }
-
-        byte mostSignificantByte = convertedBytes.Max();
-        int indexOfMostSignificantPair = convertedBytes.IndexOf(mostSignificantByte);
-        Console.WriteLine($"Index of most significant byte is {indexOfMostSignificantPair}");
-        return indexOfMostSignificantPair;
-    }
-
     private static string GetLeftPair(List<string> input, List<int> leftIndexes)
     {
         var leftPairBuilder = new StringBuilder();
@@ -182,24 +206,6 @@ public static class Kata
 
         var leftPair = leftPairBuilder.ToString();
         return leftPair;
-    }
-
-    private static string GetMiddlePair(int indexOfMostSignificantPair, List<string> hexSplitIntoPairs)
-    {
-        string middlePair;
-
-        if (indexOfMostSignificantPair == 0)
-        {
-            middlePair = Convert.ToString(hexSplitIntoPairs.First());
-        }
-        else
-        {
-            middlePair = Convert.ToString(hexSplitIntoPairs[indexOfMostSignificantPair]);
-        }
-
-        Console.WriteLine($"Most significant byte pair is {middlePair}");
-
-        return middlePair;
     }
 
     private static List<int> GetOddIndexes(List<string> input)
@@ -280,6 +286,13 @@ public static class Kata
                 hexValue = Pad0ForSingleDigit(hexValue);
                 hexSplitIntoPairs.Add(hexValue);
             }
+        }
+
+        Console.WriteLine();
+        Console.WriteLine("Hex pairs");
+        for (var i = 0; i < hexSplitIntoPairs.Count; i++)
+        {
+            Console.WriteLine($"Hex pair {hexSplitIntoPairs[i]} has index {i}");
         }
 
         return hexSplitIntoPairs;

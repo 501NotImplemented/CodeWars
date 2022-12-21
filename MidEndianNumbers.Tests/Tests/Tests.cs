@@ -8,12 +8,12 @@ internal class Tests
 {
     [TestCase("96987F", 9999999)]
     [TestCase("00", 0)]
-    [TestCase("0B0A0C", 658188)] // 1-2-0
-    [TestCase("0D0B0A0C", 168496141)] // 0-2-3-1
-    [TestCase("0D0B0A0C0E", 43135012110)] // 1-3-4-2-0
+    [TestCase("0B0A0C", 658188)]
+    [TestCase("0D0B0A0C", 168496141)]
+    [TestCase("0D0B0A0C0E", 43135012110)]
     [TestCase("10", 16)]
     [TestCase("1B04", 1051)]
-    [TestCase("79DC0180", 31228025)] // 0-2-3-1
+    [TestCase("79DC0180", 31228025)]
     public void FixedTest(string expected, long input)
     {
         string actual = Kata.MidEndian(input);
@@ -44,6 +44,32 @@ internal class Tests
         Dictionary<string, List<int>> allIndexes = Kata.GetIndexes(input, indexOfMostSignificantPair);
         List<int> actualRightIndexes = allIndexes["Right"];
         actualRightIndexes.Should().BeEquivalentTo(expectedRightPart, $"Incorrect right indexes for {number}");
+    }
+
+    [TestCase(0, 0)]
+    [TestCase(16, 0)]
+    [TestCase(9999999, 2)]
+    [TestCase(658188, 2)]
+    [TestCase(1051, 0)]
+    [TestCase(43135012110, 4)]
+    [TestCase(31228025, 2)]
+    [TestCase(168496141, 3)]
+    public void MostSignificantByteIndexIsDeterminedCorrectly(long inputNumber, int expectedIndex)
+    {
+        List<byte> convertedBytes = Kata.GetConvertedBytes(inputNumber);
+        int actual = Kata.GetIndexOfMostSignificantByte(convertedBytes);
+        actual.Should().Be(expectedIndex);
+    }
+
+    [TestCaseSource(typeof(MiddlePairCases))]
+    public void MostSignificantBytePairIsDeterminedCorrectly(
+        long inputNumber,
+        int middleIndex,
+        string expectedPair,
+        List<string> hexSplitIntoPairs)
+    {
+        string actual = Kata.GetMiddlePair(middleIndex, hexSplitIntoPairs);
+        actual.Should().Be(expectedPair, $"Middle pair of {inputNumber} is {expectedPair}");
     }
 
     [Test]
