@@ -46,7 +46,10 @@ internal class Tests
     [TestCase("D10E", 3793)]
     [TestCase("8D0C71", 822641)]
     [TestCase("6F0997", 618391)]
+    [TestCase("660C", 3174)]
     [TestCase("73B60F31", 263598451)]
+    [TestCase("E6DF054D", 98520550)]
+    [TestCase("4BB5B64B", 138701601)]
     public void RandomTest(string expected, long input)
     {
         string actual = Kata.MidEndian(input);
