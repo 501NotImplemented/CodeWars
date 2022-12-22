@@ -4,112 +4,49 @@ namespace MidEndianNumbers;
 
 public static class Kata
 {
-    public static List<byte> GetConvertedBytes(long input)
+    public static byte[] GetConvertedBytes(long input)
     {
-        return BitConverter.GetBytes(input).Distinct().ToList();
+        byte[] converted = BitConverter.GetBytes(input);
+
+        if (converted.Length > 1)
+        {
+            List<int> nonZeroByteIndexes = Enumerable.Range(0, converted.Length).Where(i => converted[i] != 0).ToList();
+            List<byte> transformed = converted.ToList();
+            if (nonZeroByteIndexes.Count > 0)
+            {
+                transformed.RemoveAll(x => x.Equals(0));
+            }
+
+            converted = transformed.ToArray();
+        }
+
+        Console.WriteLine($"Converted byte array: {BitConverter.ToString(converted)}");
+        return converted;
     }
 
-    public static Dictionary<string, List<int>> GetIndexes(List<string> input, int indexOfMostSignificantPair)
+    public static int GetIndexOfMostSignificantByte(byte[] convertedBytes)
     {
-        bool indexOfMostSignificantPairIsEven = IsEven(indexOfMostSignificantPair);
-        List<int> evenIndexesList = GetEvenIndexes(input);
-        List<int> oddIndexesList = GetOddIndexes(input);
-
-        Dictionary<string, List<int>> indexes = new()
-                                                    {
-                                                        {
-                                                            "Left", new List<int>()
-                                                        },
-                                                        {
-                                                            "Right", new List<int>()
-                                                        },
-                                                        {
-                                                            "Middle", new List<int>()
-                                                        }
-                                                    };
-        indexes["Middle"].Add(indexOfMostSignificantPair);
-
-        if (indexOfMostSignificantPairIsEven)
+        Console.WriteLine("Converted bytes:");
+        for (var i = 0; i < convertedBytes.Length; i++)
         {
-            evenIndexesList.Remove(indexOfMostSignificantPair);
+            Console.WriteLine(
+                $"Byte '{convertedBytes[i]}' with hex value '{convertedBytes[i].ToString("X")}' has index '{i}'");
+        }
+
+        bool isLittleEndian = BitConverter.IsLittleEndian;
+
+        byte mostSignificantByte;
+        if (isLittleEndian)
+        {
+            // MSB in little-endian is the smallest
+            mostSignificantByte = convertedBytes.Min();
         }
         else
         {
-            oddIndexesList.Remove(indexOfMostSignificantPair);
+            mostSignificantByte = convertedBytes.Max();
         }
 
-        Stack<int> evenIndexesStack = new();
-        Stack<int> oddIndexesStack = new();
-
-        evenIndexesList.ForEach(evenIndexesStack.Push);
-        oddIndexesList.ForEach(oddIndexesStack.Push);
-
-        Queue<int> reversedEvenQueue = new();
-
-        IEnumerable<int> reversedEvenCollection = evenIndexesStack.Reverse();
-        reversedEvenQueue = new Queue<int>(reversedEvenCollection);
-
-        for (var i = 0; i < input.Count; i++)
-        {
-            if (IsOdd(i))
-            {
-                if (reversedEvenQueue.Count > 0)
-                {
-                    indexes["Left"].Add(reversedEvenQueue.Dequeue()); // Right
-                }
-
-                if (oddIndexesStack.Count > 0)
-                {
-                    indexes["Right"].Add(oddIndexesStack.Pop()); // Left
-                }
-            }
-            else
-            {
-                if (oddIndexesStack.Count > 0)
-                {
-                    indexes["Left"].Add(oddIndexesStack.Pop()); // Right
-                }
-
-                if (reversedEvenQueue.Count > 0)
-                {
-                    indexes["Right"].Add(reversedEvenQueue.Dequeue()); // Left
-                }
-            }
-        }
-
-        if (oddIndexesStack.Count > 0)
-        {
-            for (var i = 0; oddIndexesStack.Count > 0; i++)
-            {
-                indexes["Right"].Add(oddIndexesStack.Pop()); // Left
-
-                if (oddIndexesStack.Count == 0)
-                {
-                    break;
-                }
-
-                indexes["Left"].Add(oddIndexesStack.Pop()); // Right
-            }
-        }
-
-        if (indexes["Left"].Count > 2)
-        {
-            indexes["Left"] = SortLeftIndexes(indexes["Left"]);
-        }
-
-        return indexes;
-    }
-
-    public static int GetIndexOfMostSignificantByte(List<byte> convertedBytes)
-    {
-        Console.WriteLine("Converted bytes:");
-        for (var i = 0; i < convertedBytes.Count; i++)
-        {
-            Console.WriteLine($"Byte {convertedBytes[i]} has index {i}");
-        }
-
-        byte mostSignificantByte = convertedBytes.Max();
-        int indexOfMostSignificantPair = convertedBytes.IndexOf(mostSignificantByte);
+        int indexOfMostSignificantPair = Array.IndexOf(convertedBytes, mostSignificantByte);
         Console.WriteLine($"Index of most significant byte is {indexOfMostSignificantPair}");
         return indexOfMostSignificantPair;
     }
@@ -134,37 +71,56 @@ public static class Kata
 
     public static string MidEndian(long n)
     {
-        List<byte> convertedBytes = GetConvertedBytes(n);
+        byte[] convertedBytes = GetConvertedBytes(n);
         int indexOfMostSignificantPair = GetIndexOfMostSignificantByte(convertedBytes);
-
         List<string> hexSplitIntoPairs = SplitBytesIntoHexPairs(convertedBytes);
 
         string middlePair = GetMiddlePair(indexOfMostSignificantPair, hexSplitIntoPairs);
 
         string midEndian;
         var midEndianBuilder = new StringBuilder();
+        var leftPairBuilder = new StringBuilder();
+        var rightPairBuilder = new StringBuilder();
+        bool allBytesAreZeros = !convertedBytes.Any(x => x > 0);
 
-        if (!convertedBytes.Any(x => x > 0))
+        if (allBytesAreZeros)
         {
             midEndianBuilder.Append(hexSplitIntoPairs[indexOfMostSignificantPair]);
         }
         else
         {
-            if (indexOfMostSignificantPair == 0 && hexSplitIntoPairs.Count == 2)
+            Stack<string> restOfTheBytePairs = new();
+            for (var i = 0; i < hexSplitIntoPairs.Count; i++)
             {
-                return hexSplitIntoPairs[0] + hexSplitIntoPairs[1];
+                if (i == indexOfMostSignificantPair)
+                {
+                    break;
+                }
+
+                restOfTheBytePairs.Push(hexSplitIntoPairs[i]);
             }
 
-            Dictionary<string, List<int>> indexes = GetIndexes(hexSplitIntoPairs, indexOfMostSignificantPair);
-            List<int> leftIndexes = indexes["Left"];
-            string leftPair = GetLeftPair(hexSplitIntoPairs, leftIndexes);
+            for (var i = 0; restOfTheBytePairs.Count > 0; i++)
+            {
+                string hexPair = restOfTheBytePairs.Pop();
+
+                if (IsEven(i))
+                {
+                    Console.WriteLine($"Insert {hexPair} to the left, index {i}");
+                    leftPairBuilder.Insert(0, hexPair);
+                }
+                else
+                {
+                    Console.WriteLine($"Insert {hexPair} to the right, index {i}");
+                    rightPairBuilder.Append(hexPair);
+                }
+            }
+
+            var leftPair = leftPairBuilder.ToString();
+            var rightPair = rightPairBuilder.ToString();
+
             midEndianBuilder.Append(leftPair);
-
-            Console.Write(indexOfMostSignificantPair);
             midEndianBuilder.Append(middlePair);
-
-            List<int> rightIndexes = indexes["Right"];
-            string rightPair = GetRightPair(hexSplitIntoPairs, rightIndexes);
             midEndianBuilder.Append(rightPair);
         }
 
@@ -172,83 +128,9 @@ public static class Kata
         return midEndian;
     }
 
-    public static List<int> SortLeftIndexes(List<int> input)
-    {
-        List<int> tempList = input;
-        var nextIndex = 2;
-
-        for (var currentIndex = 0; nextIndex < input.Count; currentIndex++, nextIndex++)
-        {
-            (tempList[currentIndex], tempList[nextIndex]) = (tempList[nextIndex], tempList[currentIndex]);
-        }
-
-        List<int> sortedIndexes = tempList;
-        return sortedIndexes;
-    }
-
-    private static List<int> GetEvenIndexes(List<string> input)
-    {
-        List<int> result = Enumerable.Range(0, input.Count).Where(IsEven).Select(i => i).ToList();
-        return result;
-    }
-
-    private static string GetLeftPair(List<string> input, List<int> leftIndexes)
-    {
-        var leftPairBuilder = new StringBuilder();
-
-        for (var i = 0; i < leftIndexes.Count; i++)
-        {
-            int leftIndex = leftIndexes[i];
-            Console.Write($"{leftIndex}-");
-            string value = input[leftIndex];
-            leftPairBuilder.Append(value);
-        }
-
-        var leftPair = leftPairBuilder.ToString();
-        return leftPair;
-    }
-
-    private static List<int> GetOddIndexes(List<string> input)
-    {
-        List<int> oddIndexList = Enumerable.Range(0, input.Count).Where(IsOdd).Select(i => i).Reverse().ToList();
-
-        return oddIndexList;
-    }
-
-    private static string GetRightPair(List<string> input, List<int> rightIndexes)
-    {
-        var rightPairBuilder = new StringBuilder();
-
-        foreach (int rightIndex in rightIndexes)
-        {
-            if (rightIndex < input.Count)
-            {
-                Console.Write($"-{rightIndex}");
-                rightPairBuilder.Append(input[rightIndex]);
-            }
-            else
-            {
-                break;
-            }
-        }
-
-        var rightPair = rightPairBuilder.ToString();
-        return rightPair;
-    }
-
     private static bool IsEven(int number)
     {
         if (number % 2 == 0)
-        {
-            return true;
-        }
-
-        return false;
-    }
-
-    private static bool IsOdd(int number)
-    {
-        if (number % 2 != 0)
         {
             return true;
         }
@@ -266,7 +148,7 @@ public static class Kata
         return input;
     }
 
-    private static List<string> SplitBytesIntoHexPairs(List<byte> convertedBytes)
+    private static List<string> SplitBytesIntoHexPairs(byte[] convertedBytes)
     {
         List<string> hexSplitIntoPairs = new();
 
