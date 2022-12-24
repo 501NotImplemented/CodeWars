@@ -4,28 +4,32 @@
     {
         public IFuelTankDisplay fuelTankDisplay;
 
-        private IEngine engine;
+        private readonly IEngine engine;
 
         private IFuelTank fuelTank;
 
         public Car()
         {
+            fuelTank = new FuelTank();
+            engine = new Engine();
         }
 
         public Car(double fuelLevel)
         {
+            fuelTank = new FuelTank(fuelLevel);
+            engine = new Engine();
         }
 
-        public bool EngineIsRunning => engine != null;
+        public bool EngineIsRunning => engine.IsRunning;
 
         public void EngineStart()
         {
-            throw new NotImplementedException();
+            engine.Start();
         }
 
         public void EngineStop()
         {
-            throw new NotImplementedException();
+            engine.Stop();
         }
 
         public void Refuel(double amount)
@@ -41,10 +45,31 @@
 
     public class Engine : IEngine
     {
+        public bool IsRunning { get; set; }
+
+        public void Start()
+        {
+            IsRunning = true;
+        }
+
+        public void Stop()
+        {
+            IsRunning = false;
+        }
     }
 
     public class FuelTank : IFuelTank
     {
+        private double fuelLevel;
+
+        public FuelTank()
+        {
+        }
+
+        public FuelTank(double fuelLevel)
+        {
+            this.fuelLevel = fuelLevel;
+        }
     }
 
     public class FuelTankDisplay : IFuelTankDisplay

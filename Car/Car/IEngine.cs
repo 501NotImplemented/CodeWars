@@ -1,6 +1,11 @@
 ﻿namespace Car
 {
-    internal interface IEngine
+    public interface IEngine
     {
+        public bool IsRunning { get; set; }
+
+        void Start();
+
+        void Stop();
     }
 }
