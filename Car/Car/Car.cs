@@ -14,14 +14,14 @@
         {
             fuelTank = new FuelTank();
             fuelTankDisplay = new FuelTankDisplay(fuelTank);
-            engine = new Engine();
+            engine = new Engine(fuelTank);
         }
 
         public Car(double fuelLevel)
         {
             fuelTank = new FuelTank(fuelLevel);
             fuelTankDisplay = new FuelTankDisplay(fuelTank);
-            engine = new Engine();
+            engine = new Engine(fuelTank);
         }
 
         public bool EngineIsRunning => engine.IsRunning;
@@ -50,7 +50,7 @@
 
         public void RunningIdle()
         {
-            fuelTank.Consume(fuelConsumptionPerSecond);
+            engine.Consume(fuelConsumptionPerSecond);
         }
     }
 }

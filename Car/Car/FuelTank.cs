@@ -29,6 +29,11 @@
 
         public void Refuel(double liters)
         {
+            if (liters <= 0)
+            {
+                liters = 0;
+            }
+
             var minimumReserveAmount = 5;
             if (liters <= minimumReserveAmount)
             {
