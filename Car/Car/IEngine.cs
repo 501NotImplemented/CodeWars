@@ -2,7 +2,9 @@
 {
     public interface IEngine
     {
-        public bool IsRunning { get; set; }
+        bool IsRunning { get; }
+
+        void Consume(double liters);
 
         void Start();
 

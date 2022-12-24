@@ -1,12 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Car
+﻿namespace Car
 {
-    internal interface ICar
+    public interface ICar
     {
+        bool EngineIsRunning { get; }
+
+        void EngineStart();
+
+        void EngineStop();
+
+        void Refuel(double liters);
+
+        void RunningIdle();
     }
 }

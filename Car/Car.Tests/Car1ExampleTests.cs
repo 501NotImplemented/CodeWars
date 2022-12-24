@@ -14,7 +14,8 @@ namespace Car.Tests
 
             Enumerable.Range(0, 3000).ToList().ForEach(s => car.RunningIdle());
 
-            Assert.AreEqual(0.10, car.fuelTankDisplay.FillLevel, "Wrong fuel tank fill level!");
+            double actualFuelLevel = car.fuelTankDisplay.FillLevel;
+            Assert.AreEqual(0.10, actualFuelLevel, "Wrong fuel tank fill level!");
         }
 
         [Test]

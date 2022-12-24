@@ -2,10 +2,10 @@
 {
     public interface IFuelTankDisplay
     {
-        public double FillLevel { get; set; }
+        double FillLevel { get; }
 
-        public bool IsComplete { get; set; }
+        bool IsComplete { get; }
 
-        public bool IsOnReserve { get; set; }
+        bool IsOnReserve { get; }
     }
 }

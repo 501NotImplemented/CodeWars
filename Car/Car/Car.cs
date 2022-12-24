@@ -6,17 +6,21 @@
 
         private readonly IEngine engine;
 
-        private IFuelTank fuelTank;
+        private readonly double fuelConsumptionPerSecond = 0.0003;
+
+        private readonly IFuelTank fuelTank;
 
         public Car()
         {
             fuelTank = new FuelTank();
+            fuelTankDisplay = new FuelTankDisplay(fuelTank);
             engine = new Engine();
         }
 
         public Car(double fuelLevel)
         {
             fuelTank = new FuelTank(fuelLevel);
+            fuelTankDisplay = new FuelTankDisplay(fuelTank);
             engine = new Engine();
         }
 
@@ -34,50 +38,19 @@
 
         public void Refuel(double amount)
         {
-            throw new NotImplementedException();
+            if (amount < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(amount));
+            }
+
+            EngineStop();
+            fuelTank.Refuel(amount);
+            EngineStart();
         }
 
         public void RunningIdle()
         {
-            throw new NotImplementedException();
+            fuelTank.Consume(fuelConsumptionPerSecond);
         }
-    }
-
-    public class Engine : IEngine
-    {
-        public bool IsRunning { get; set; }
-
-        public void Start()
-        {
-            IsRunning = true;
-        }
-
-        public void Stop()
-        {
-            IsRunning = false;
-        }
-    }
-
-    public class FuelTank : IFuelTank
-    {
-        private double fuelLevel;
-
-        public FuelTank()
-        {
-        }
-
-        public FuelTank(double fuelLevel)
-        {
-            this.fuelLevel = fuelLevel;
-        }
-    }
-
-    public class FuelTankDisplay : IFuelTankDisplay
-    {
-        public double FillLevel { get; set; }
-
-        public bool IsComplete { get; set; }
-
-        public bool IsOnReserve { get; set; }
     }
 }
