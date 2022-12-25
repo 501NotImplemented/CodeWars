@@ -2,15 +2,9 @@
 {
     public class FuelTank : IFuelTank
     {
-        public FuelTank(double fuelLevel)
+        public FuelTank(double fuelLevel = 20)
         {
             Refuel(fuelLevel);
-        }
-
-        public FuelTank()
-        {
-            var defaultFuelLevel = 20;
-            Refuel(defaultFuelLevel);
         }
 
         public double FillLevel { get; private set; }
