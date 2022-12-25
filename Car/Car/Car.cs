@@ -2,11 +2,13 @@
 {
     public class Car : ICar
     {
-        private const int maxSpeed = 250;
+        private const int AirResistanceSlowdown = 1;
 
-        public IDrivingInformationDisplay drivingInformationDisplay;
+        private const int MaxSpeed = 250;
 
-        public IFuelTankDisplay fuelTankDisplay;
+        public IDrivingInformationDisplay DrivingInformationDisplay;
+
+        public IFuelTankDisplay FuelTankDisplay;
 
         private readonly IDrivingProcessor drivingProcessor;
 
@@ -23,16 +25,16 @@
                 maxAcceleration = 0;
             }
 
-            if (maxAcceleration >= maxSpeed)
+            if (maxAcceleration >= MaxSpeed)
             {
-                maxAcceleration = maxSpeed;
+                maxAcceleration = MaxSpeed;
             }
 
             fuelTank = new FuelTank(fuelLevel);
-            fuelTankDisplay = new FuelTankDisplay(fuelTank);
+            FuelTankDisplay = new FuelTankDisplay(fuelTank);
             engine = new Engine(fuelTank);
             drivingProcessor = new DrivingProcessor();
-            drivingInformationDisplay = new DrivingInformationDisplay(drivingProcessor);
+            DrivingInformationDisplay = new DrivingInformationDisplay(drivingProcessor);
         }
 
         public bool EngineIsRunning => engine.IsRunning;
@@ -71,7 +73,7 @@
 
         public void FreeWheel()
         {
-            throw new NotImplementedException();
+            drivingProcessor.ReduceSpeed(AirResistanceSlowdown);
         }
 
         public void Refuel(double liters)
@@ -107,7 +109,7 @@
                 case >= 141 and <= 200:
                     fuelConsumptionPerSecond = 0.0025;
                     break;
-                case >= 201 and <= maxSpeed:
+                case >= 201 and <= MaxSpeed:
                     fuelConsumptionPerSecond = 0.0030;
                     break;
                 default:

@@ -22,7 +22,11 @@
                 return;
             }
 
-            ActualSpeed = ActualSpeed + defaultAccelerationPerSecond;
+            Console.WriteLine($"Accelerating speed from {ActualSpeed} to {speed}");
+            int accelerationSpeed = GetAccelerationSpeed(speed);
+            Console.WriteLine($"Acceleration speed is {accelerationSpeed}");
+
+            ActualSpeed = ActualSpeed + accelerationSpeed;
         }
 
         public void ReduceSpeed(int speed)
@@ -33,6 +37,35 @@
             }
 
             ActualSpeed = ActualSpeed - maximumBreakSpeed;
+        }
+
+        private int GetAccelerationSpeed(int speed)
+        {
+            int speedDifference = speed - ActualSpeed;
+            var maxAcceleration = 20;
+            var minimumAcceleration = 5;
+            int acceleration = defaultAccelerationPerSecond;
+
+            if (speedDifference == 0)
+            {
+                acceleration = 0;
+            }
+
+            if (speedDifference >= maxAcceleration)
+            {
+                acceleration = defaultAccelerationPerSecond;
+            }
+
+            if (speedDifference == defaultAccelerationPerSecond)
+            {
+                acceleration = defaultAccelerationPerSecond;
+            }
+            else if (speedDifference <= minimumAcceleration)
+            {
+                acceleration = minimumAcceleration;
+            }
+
+            return acceleration;
         }
     }
 }
