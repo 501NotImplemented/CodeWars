@@ -60,7 +60,7 @@
             {
                 acceleration = defaultAccelerationPerSecond;
             }
-            else if (speedDifference <= minimumAcceleration)
+            else if (speedDifference > 0 && speedDifference <= minimumAcceleration)
             {
                 acceleration = minimumAcceleration;
             }
