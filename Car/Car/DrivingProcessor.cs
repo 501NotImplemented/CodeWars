@@ -22,9 +22,7 @@
                 return;
             }
 
-            Console.WriteLine($"Accelerating speed from {ActualSpeed} to {speed}");
             int accelerationSpeed = GetAccelerationSpeed(speed);
-            Console.WriteLine($"Acceleration speed is {accelerationSpeed}");
 
             ActualSpeed = ActualSpeed + accelerationSpeed;
         }
@@ -36,7 +34,12 @@
                 return;
             }
 
-            ActualSpeed = ActualSpeed - maximumBreakSpeed;
+            if (speed > maximumBreakSpeed)
+            {
+                speed = maximumBreakSpeed;
+            }
+
+            ActualSpeed = ActualSpeed - speed;
         }
 
         private int GetAccelerationSpeed(int speed)
