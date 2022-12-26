@@ -27,13 +27,24 @@ public class Car2ExampleTests
     }
 
     [Test]
-    public void TestAccelerateOnlyUntil250()
+    public void TestAccelerateBy5()
     {
-        var car = new Car();
+        var car = new Car(30, 5);
 
         car.EngineStart();
-        Enumerable.Range(0, 200).ToList().ForEach(s => car.Accelerate(250));
-        car.Accelerate(260);
+
+        Enumerable.Range(0, 20).ToList().ForEach(s => car.Accelerate(100));
+        car.Accelerate(112);
+        Assert.AreEqual(112, car.drivingInformationDisplay.ActualSpeed, "Wrong actual speed!");
+    }
+
+    [Test]
+    public void TestAccelerateOnlyUntil250()
+    {
+        var car = new Car(20, 20);
+
+        car.EngineStart();
+        Enumerable.Range(0, 14).ToList().ForEach(s => car.Accelerate(260));
         Assert.AreEqual(250, car.drivingInformationDisplay.ActualSpeed, "Wrong actual speed!");
     }
 
@@ -97,7 +108,7 @@ public class Car2ExampleTests
     [Test]
     public void TestMaxAccelerationOutOfRange()
     {
-        var car = new Car();
+        var car = new Car(20, 25);
 
         car.EngineStart();
         car.Accelerate(21);

@@ -49,6 +49,12 @@
         {
             Console.WriteLine($"Accelerate from {drivingProcessor.ActualSpeed} to {speed}");
 
+            bool newSpeedExceedsMaximum = speed > MaxSpeed;
+            if (newSpeedExceedsMaximum)
+            {
+                speed = MaxSpeed;
+            }
+
             double newConsumption;
             if (!EngineIsRunning)
             {

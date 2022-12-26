@@ -2,11 +2,9 @@
 {
     public class DrivingProcessor : IDrivingProcessor
     {
-        private readonly int currentAcceleration;
+        private readonly int currentMaximumAcceleration;
 
         private readonly int defaultAccelerationPerSecond = 10;
-
-        private readonly int maximumAccelerationPerSecond = 20;
 
         private readonly int maximumBreakSpeed = 10;
 
@@ -14,10 +12,10 @@
 
         private readonly int minimumAccelerationPerSecond = 5;
 
-        public DrivingProcessor(int acceleration)
+        public DrivingProcessor(int maximumAcceleration)
         {
             ActualSpeed = 0;
-            currentAcceleration = acceleration;
+            currentMaximumAcceleration = maximumAcceleration;
         }
 
         public int ActualSpeed { get; private set; }
@@ -47,29 +45,31 @@
         private int GetAccelerationSpeed(int speed)
         {
             int speedDifference = speed - ActualSpeed;
-
+            Console.WriteLine($"Speed difference is {speedDifference}");
             int acceleration = defaultAccelerationPerSecond;
-            bool newSpeedExceedsMaximumAcceleration = speedDifference >= maximumAccelerationPerSecond;
+            bool newSpeedExceedsMaximumAcceleration = speedDifference >= currentMaximumAcceleration;
 
             if (speedDifference == 0)
             {
                 acceleration = 0;
             }
-
-            if (newSpeedExceedsMaximumAcceleration)
+            else if (newSpeedExceedsMaximumAcceleration)
             {
-                acceleration = currentAcceleration;
+                acceleration = currentMaximumAcceleration;
             }
-            else if (speedDifference != 0)
+            else if (speedDifference == currentMaximumAcceleration)
             {
-                acceleration = currentAcceleration;
-            }
-
-            if (speedDifference == currentAcceleration)
-            {
-                acceleration = currentAcceleration;
+                acceleration = currentMaximumAcceleration;
             }
             else if (speedDifference > 0 && speedDifference <= minimumAccelerationPerSecond)
+            {
+                acceleration = minimumAccelerationPerSecond;
+            }
+            else if (speedDifference <= currentMaximumAcceleration && speedDifference > defaultAccelerationPerSecond)
+            {
+                acceleration = defaultAccelerationPerSecond;
+            }
+            else if (speedDifference < defaultAccelerationPerSecond && speedDifference > 0)
             {
                 acceleration = minimumAccelerationPerSecond;
             }
