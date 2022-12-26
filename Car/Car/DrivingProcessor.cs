@@ -23,7 +23,7 @@
             }
 
             int accelerationSpeed = GetAccelerationSpeed(speed);
-
+            Console.WriteLine($"Increasing speed by {accelerationSpeed}");
             ActualSpeed = ActualSpeed + accelerationSpeed;
         }
 
@@ -67,6 +67,8 @@
             {
                 acceleration = minimumAcceleration;
             }
+
+            Console.WriteLine($"Acceleration is {acceleration}");
 
             return acceleration;
         }

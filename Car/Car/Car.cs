@@ -34,19 +34,25 @@
         public void Accelerate(int speed)
         {
             Console.WriteLine($"Accelerate to {speed}");
-            if (drivingProcessor.ActualSpeed >= speed)
+
+            if (!EngineIsRunning)
             {
+                Console.WriteLine($"Engine is not running. Actual speed {drivingProcessor.ActualSpeed}. No action.");
+                return;
+            }
+
+            if (drivingProcessor.ActualSpeed > speed)
+            {
+                Console.WriteLine(
+                    $"Actual speed {drivingProcessor.ActualSpeed} is more than expected {speed}. Free wheeling");
                 FreeWheel();
                 return;
             }
 
             if (drivingProcessor.ActualSpeed == MaxSpeed)
             {
-                return;
-            }
-
-            if (!EngineIsRunning)
-            {
+                Console.WriteLine(
+                    $"Actual speed {drivingProcessor.ActualSpeed} is already at max {MaxSpeed}. No action.");
                 return;
             }
 

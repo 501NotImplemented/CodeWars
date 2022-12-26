@@ -16,7 +16,7 @@
             if (IsRunning)
             {
                 fuelTank.Consume(liters);
-                if (fuelTank.FillLevel <= 0)
+                if (fuelTank.FillLevel < 0)
                 {
                     Stop();
                 }
@@ -28,6 +28,8 @@
             if (fuelTank.FillLevel > 0)
             {
                 IsRunning = true;
+                Console.WriteLine("Started engine");
+                Console.WriteLine($"Fuel level {fuelTank.FillLevel}");
             }
         }
 

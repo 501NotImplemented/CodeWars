@@ -15,7 +15,7 @@
 
         public void Consume(double liters)
         {
-            if (FillLevel >= 0)
+            if (FillLevel > 0)
             {
                 FillLevel = FillLevel - liters;
             }
