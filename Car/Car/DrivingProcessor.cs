@@ -17,11 +17,6 @@
 
         public void IncreaseSpeedTo(int speed)
         {
-            if ((speed <= 0) | (speed >= maximumSpeed))
-            {
-                return;
-            }
-
             int accelerationSpeed = GetAccelerationSpeed(speed);
             Console.WriteLine($"Increasing speed by {accelerationSpeed}");
             ActualSpeed = ActualSpeed + accelerationSpeed;
@@ -56,7 +51,7 @@
 
             if (speedDifference >= maxAcceleration)
             {
-                acceleration = defaultAccelerationPerSecond;
+                acceleration = maxAcceleration;
             }
 
             if (speedDifference == defaultAccelerationPerSecond)

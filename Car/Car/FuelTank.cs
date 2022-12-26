@@ -17,7 +17,9 @@
         {
             if (FillLevel > 0)
             {
+                Console.WriteLine($"Consuming {liters} liters. Fuel level before consumption {FillLevel}");
                 FillLevel = FillLevel - liters;
+                Console.WriteLine($"New fuel level {FillLevel}");
             }
         }
 

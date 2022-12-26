@@ -33,7 +33,7 @@
 
         public void Accelerate(int speed)
         {
-            Console.WriteLine($"Accelerate to {speed}");
+            Console.WriteLine($"Accelerate from {drivingProcessor.ActualSpeed} to {speed}");
 
             if (!EngineIsRunning)
             {

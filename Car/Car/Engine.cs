@@ -18,6 +18,7 @@
                 fuelTank.Consume(liters);
                 if (fuelTank.FillLevel < 0)
                 {
+                    Console.WriteLine($"Fuel tank level is {fuelTank.FillLevel}, stopping the engine");
                     Stop();
                 }
             }
