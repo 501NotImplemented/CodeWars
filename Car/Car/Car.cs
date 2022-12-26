@@ -35,6 +35,7 @@
         {
             Console.WriteLine($"Accelerate from {drivingProcessor.ActualSpeed} to {speed}");
 
+            double newConsumption;
             if (!EngineIsRunning)
             {
                 Console.WriteLine($"Engine is not running. Actual speed {drivingProcessor.ActualSpeed}. No action.");
@@ -53,11 +54,13 @@
             {
                 Console.WriteLine(
                     $"Actual speed {drivingProcessor.ActualSpeed} is already at max {MaxSpeed}. No action.");
+                newConsumption = GetFuelConsumption(drivingProcessor.ActualSpeed);
+                engine.Consume(newConsumption);
                 return;
             }
 
             drivingProcessor.IncreaseSpeedTo(speed);
-            double newConsumption = GetFuelConsumption(drivingProcessor.ActualSpeed);
+            newConsumption = GetFuelConsumption(drivingProcessor.ActualSpeed);
             engine.Consume(newConsumption);
         }
 
@@ -88,6 +91,8 @@
             {
                 drivingProcessor.ReduceSpeed(AirResistanceSlowdown);
             }
+
+            RunningIdle();
         }
 
         public void Refuel(double liters)

@@ -40,18 +40,24 @@
         private int GetAccelerationSpeed(int speed)
         {
             int speedDifference = speed - ActualSpeed;
+
             var maxAcceleration = 20;
             var minimumAcceleration = 5;
             int acceleration = defaultAccelerationPerSecond;
+            bool newSpeedExceedsMaximumAcceleration = speedDifference >= maxAcceleration;
 
             if (speedDifference == 0)
             {
                 acceleration = 0;
             }
 
-            if (speedDifference >= maxAcceleration)
+            if (newSpeedExceedsMaximumAcceleration)
             {
-                acceleration = maxAcceleration;
+                acceleration = defaultAccelerationPerSecond;
+            }
+            else if (speedDifference != 0)
+            {
+                acceleration = defaultAccelerationPerSecond;
             }
 
             if (speedDifference == defaultAccelerationPerSecond)

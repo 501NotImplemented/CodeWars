@@ -27,6 +27,17 @@ public class Car2ExampleTests
     }
 
     [Test]
+    public void TestAccelerateOnlyUntil250()
+    {
+        var car = new Car();
+
+        car.EngineStart();
+        Enumerable.Range(0, 200).ToList().ForEach(s => car.Accelerate(250));
+        car.Accelerate(260);
+        Assert.AreEqual(250, car.drivingInformationDisplay.ActualSpeed, "Wrong actual speed!");
+    }
+
+    [Test]
     public void TestBraking()
     {
         var car = new Car();
@@ -47,7 +58,7 @@ public class Car2ExampleTests
     [Test]
     public void TestConsumptionSpeedUpTo30()
     {
-        var car = new Car(1, 20);
+        var car = new Car(1);
 
         car.EngineStart();
 
