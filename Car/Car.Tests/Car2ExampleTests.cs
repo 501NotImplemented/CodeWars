@@ -95,6 +95,16 @@ public class Car2ExampleTests
     }
 
     [Test]
+    public void TestMaxAccelerationOutOfRange()
+    {
+        var car = new Car();
+
+        car.EngineStart();
+        car.Accelerate(21);
+        Assert.AreEqual(20, car.drivingInformationDisplay.ActualSpeed, "Wrong actual speed!");
+    }
+
+    [Test]
     public void TestStartSpeed()
     {
         var car = new Car();

@@ -2,15 +2,22 @@
 {
     public class DrivingProcessor : IDrivingProcessor
     {
+        private readonly int currentAcceleration;
+
         private readonly int defaultAccelerationPerSecond = 10;
+
+        private readonly int maximumAccelerationPerSecond = 20;
 
         private readonly int maximumBreakSpeed = 10;
 
         private readonly int maximumSpeed = 250;
 
-        public DrivingProcessor()
+        private readonly int minimumAccelerationPerSecond = 5;
+
+        public DrivingProcessor(int acceleration)
         {
             ActualSpeed = 0;
+            currentAcceleration = acceleration;
         }
 
         public int ActualSpeed { get; private set; }
@@ -41,10 +48,8 @@
         {
             int speedDifference = speed - ActualSpeed;
 
-            var maxAcceleration = 20;
-            var minimumAcceleration = 5;
             int acceleration = defaultAccelerationPerSecond;
-            bool newSpeedExceedsMaximumAcceleration = speedDifference >= maxAcceleration;
+            bool newSpeedExceedsMaximumAcceleration = speedDifference >= maximumAccelerationPerSecond;
 
             if (speedDifference == 0)
             {
@@ -53,24 +58,23 @@
 
             if (newSpeedExceedsMaximumAcceleration)
             {
-                acceleration = defaultAccelerationPerSecond;
+                acceleration = currentAcceleration;
             }
             else if (speedDifference != 0)
             {
-                acceleration = defaultAccelerationPerSecond;
+                acceleration = currentAcceleration;
             }
 
-            if (speedDifference == defaultAccelerationPerSecond)
+            if (speedDifference == currentAcceleration)
             {
-                acceleration = defaultAccelerationPerSecond;
+                acceleration = currentAcceleration;
             }
-            else if (speedDifference > 0 && speedDifference <= minimumAcceleration)
+            else if (speedDifference > 0 && speedDifference <= minimumAccelerationPerSecond)
             {
-                acceleration = minimumAcceleration;
+                acceleration = minimumAccelerationPerSecond;
             }
 
             Console.WriteLine($"Acceleration is {acceleration}");
-
             return acceleration;
         }
     }

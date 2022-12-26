@@ -4,8 +4,6 @@
     {
         private const int AirResistanceSlowdown = 1;
 
-        private const int maxAcceleration = 20;
-
         private const int MaxSpeed = 250;
 
         public IDrivingInformationDisplay drivingInformationDisplay;
@@ -18,14 +16,30 @@
 
         private readonly IFuelTank fuelTank;
 
+        private readonly int maximumAccelerationPerSecond = 20;
+
+        private readonly int minimumAccelerationPerSecond = 5;
+
         private double fuelConsumptionPerSecond = 0.0003;
 
-        public Car(double fuelLevel = 20, int maxAcceleration = 20)
+        public Car(double fuelLevel = 20, int maxAcceleration = 10)
         {
+            Console.WriteLine($"Constructing car with fuel level {fuelLevel} and {maxAcceleration} max acceleration");
+
+            if (maxAcceleration < minimumAccelerationPerSecond)
+            {
+                maxAcceleration = minimumAccelerationPerSecond;
+            }
+
+            if (maxAcceleration > maximumAccelerationPerSecond)
+            {
+                maxAcceleration = maximumAccelerationPerSecond;
+            }
+
             fuelTank = new FuelTank(fuelLevel);
             fuelTankDisplay = new FuelTankDisplay(fuelTank);
             engine = new Engine(fuelTank);
-            drivingProcessor = new DrivingProcessor();
+            drivingProcessor = new DrivingProcessor(maxAcceleration);
             drivingInformationDisplay = new DrivingInformationDisplay(drivingProcessor);
         }
 
