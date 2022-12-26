@@ -6,9 +6,9 @@
 
         private const int MaxSpeed = 250;
 
-        public IDrivingInformationDisplay DrivingInformationDisplay;
+        public IDrivingInformationDisplay drivingInformationDisplay;
 
-        public IFuelTankDisplay FuelTankDisplay;
+        public IFuelTankDisplay fuelTankDisplay;
 
         private readonly IDrivingProcessor drivingProcessor;
 
@@ -18,32 +18,33 @@
 
         private double fuelConsumptionPerSecond = 0.0003;
 
-        public Car(double fuelLevel = 20, int maxAcceleration = 250)
+        public Car(double fuelLevel = 20, int maxAcceleration = 20)
         {
-            if (maxAcceleration < 0)
-            {
-                maxAcceleration = 0;
-            }
-
-            if (maxAcceleration >= MaxSpeed)
-            {
-                maxAcceleration = MaxSpeed;
-            }
-
             fuelTank = new FuelTank(fuelLevel);
-            FuelTankDisplay = new FuelTankDisplay(fuelTank);
+            fuelTankDisplay = new FuelTankDisplay(fuelTank);
             engine = new Engine(fuelTank);
             drivingProcessor = new DrivingProcessor();
-            DrivingInformationDisplay = new DrivingInformationDisplay(drivingProcessor);
+            drivingInformationDisplay = new DrivingInformationDisplay(drivingProcessor);
         }
 
         public bool EngineIsRunning => engine.IsRunning;
 
         public void Accelerate(int speed)
         {
+            if (drivingProcessor.ActualSpeed >= speed)
+            {
+                FreeWheel();
+                return;
+            }
+
+            if (drivingProcessor.ActualSpeed == MaxSpeed)
+            {
+                return;
+            }
+
             if (!EngineIsRunning)
             {
-                engine.Start();
+                return;
             }
 
             drivingProcessor.IncreaseSpeedTo(speed);
@@ -53,7 +54,7 @@
 
         public void BrakeBy(int speed)
         {
-            if (!EngineIsRunning)
+            if (!EngineIsRunning || drivingProcessor.ActualSpeed == 0)
             {
                 return;
             }
@@ -64,6 +65,7 @@
         public void EngineStart()
         {
             engine.Start();
+            engine.Consume(fuelConsumptionPerSecond);
         }
 
         public void EngineStop()
@@ -73,7 +75,10 @@
 
         public void FreeWheel()
         {
-            drivingProcessor.ReduceSpeed(AirResistanceSlowdown);
+            if (drivingProcessor.ActualSpeed > 0)
+            {
+                drivingProcessor.ReduceSpeed(AirResistanceSlowdown);
+            }
         }
 
         public void Refuel(double liters)
