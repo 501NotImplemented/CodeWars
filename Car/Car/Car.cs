@@ -4,6 +4,8 @@
     {
         private const int AirResistanceSlowdown = 1;
 
+        private const int maxAcceleration = 20;
+
         private const int MaxSpeed = 250;
 
         public IDrivingInformationDisplay drivingInformationDisplay;
@@ -31,6 +33,7 @@
 
         public void Accelerate(int speed)
         {
+            Console.WriteLine($"Accelerate to {speed}");
             if (drivingProcessor.ActualSpeed >= speed)
             {
                 FreeWheel();
@@ -102,7 +105,10 @@
         {
             switch (currentSpeed)
             {
-                case > 1 and <= 60:
+                case 0:
+                    fuelConsumptionPerSecond = 0;
+                    break;
+                case >= 1 and <= 60:
                     fuelConsumptionPerSecond = 0.0020;
                     break;
                 case >= 61 and <= 100:
