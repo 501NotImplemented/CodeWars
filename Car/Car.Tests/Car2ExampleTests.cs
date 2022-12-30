@@ -33,8 +33,8 @@ public class Car2ExampleTests
 
         car.EngineStart();
 
-        Enumerable.Range(0, 20).ToList().ForEach(s => car.Accelerate(100));
-        car.Accelerate(112);
+        Enumerable.Range(0, 23).ToList().ForEach(s => car.Accelerate(112));
+
         Assert.AreEqual(112, car.drivingInformationDisplay.ActualSpeed, "Wrong actual speed!");
     }
 

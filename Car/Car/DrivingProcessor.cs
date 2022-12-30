@@ -63,7 +63,7 @@
             }
             else if (speedDifference > 0 && speedDifference <= minimumAccelerationPerSecond)
             {
-                acceleration = minimumAccelerationPerSecond;
+                acceleration = speedDifference;
             }
             else if (speedDifference <= currentMaximumAcceleration && speedDifference > defaultAccelerationPerSecond)
             {
@@ -71,7 +71,7 @@
             }
             else if (speedDifference < defaultAccelerationPerSecond && speedDifference > 0)
             {
-                acceleration = minimumAccelerationPerSecond;
+                acceleration = speedDifference;
             }
 
             Console.WriteLine($"Acceleration is {acceleration}");
