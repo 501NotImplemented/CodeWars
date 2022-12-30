@@ -8,14 +8,31 @@ public class Car2ExampleTests
     [Test]
     public void Car2RandomTestConsumption()
     {
-        var car = new Car(20, 15);
+        var car = new Car(20, 14);
 
         car.EngineStart();
 
         Enumerable.Range(0, 10).ToList().ForEach(s => car.Accelerate(250));
-        car.BrakeBy(9);
-        car.Accelerate(132);
-        Assert.AreEqual(19.98, car.fuelTankDisplay.FillLevel, "Wrong fuel tank fill level!");
+        car.BrakeBy(8);
+        Enumerable.Range(0, 17).ToList().ForEach(s => car.FreeWheel());
+        car.Accelerate(123);
+        var expected = 19.98;
+        Console.WriteLine($"Difference {expected - car.fuelTankDisplay.FillLevel}");
+
+        Assert.AreEqual(expected, car.fuelTankDisplay.FillLevel, "Wrong fuel tank fill level!");
+    }
+
+    [Test]
+    public void Car2RandomTestsSped()
+    {
+        var car = new Car(20, 13);
+
+        car.EngineStart();
+        Enumerable.Range(0, 10).ToList().ForEach(s => car.Accelerate(250));
+        car.BrakeBy(6);
+        Enumerable.Range(0, 10).ToList().ForEach(s => car.FreeWheel());
+        car.Accelerate(125);
+        Assert.AreEqual(125, car.drivingInformationDisplay.ActualSpeed, "Wrong actual speed!");
     }
 
     [Test]
@@ -90,6 +107,17 @@ public class Car2ExampleTests
         car.BrakeBy(10);
 
         Assert.AreEqual(80, car.drivingInformationDisplay.ActualSpeed, "Wrong actual speed!");
+    }
+
+    [Test]
+    public void TestConsumptionAsRunIdleWhenFreeWheelingAt0()
+    {
+        var car = new Car(1, 20);
+
+        car.EngineStart();
+        Enumerable.Range(0, 199).ToList().ForEach(s => car.FreeWheel());
+
+        Assert.AreEqual(0.93999999999999995d, car.fuelTankDisplay.FillLevel, "Wrong fuel tank fill level!");
     }
 
     [Test]

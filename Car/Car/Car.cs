@@ -109,12 +109,13 @@
 
         public void FreeWheel()
         {
+            Console.WriteLine("Free wheeling");
             if (drivingProcessor.ActualSpeed > 0)
             {
                 drivingProcessor.ReduceSpeed(AirResistanceSlowdown);
             }
 
-            RunningIdle();
+            // RunningIdle();
         }
 
         public void Refuel(double liters)

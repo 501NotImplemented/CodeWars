@@ -69,6 +69,10 @@
             {
                 acceleration = speedDifference;
             }
+            else if (speedDifference < currentMaximumAcceleration && speedDifference > 0)
+            {
+                acceleration = speedDifference;
+            }
 
             Console.WriteLine($"Acceleration is {acceleration}");
             return acceleration;
