@@ -2,29 +2,104 @@
 {
     public class Car : ICar
     {
+        private const int AirResistanceSlowdown = 1;
+
+        private const int MaxSpeed = 250;
+
+        private static readonly double idleConsumptionPerSecond = 0.0003;
+
+        public IDrivingInformationDisplay drivingInformationDisplay;
+
         public IFuelTankDisplay fuelTankDisplay;
+
+        private readonly IDrivingProcessor drivingProcessor;
 
         private readonly IEngine engine;
 
-        private readonly double fuelConsumptionPerSecond = 0.0003;
-
         private readonly IFuelTank fuelTank;
 
-        public Car()
-        {
-            fuelTank = new FuelTank();
-            fuelTankDisplay = new FuelTankDisplay(fuelTank);
-            engine = new Engine(fuelTank);
-        }
+        private readonly int maximumAccelerationPerSecond = 20;
 
-        public Car(double fuelLevel)
+        private readonly int minimumAccelerationPerSecond = 5;
+
+        private double fuelConsumptionPerSecond = idleConsumptionPerSecond;
+
+        public Car(double fuelLevel = 20, int maxAcceleration = 10)
         {
+            Console.WriteLine($"Constructing car with fuel level {fuelLevel} and {maxAcceleration} max acceleration");
+
+            if (maxAcceleration < minimumAccelerationPerSecond)
+            {
+                maxAcceleration = minimumAccelerationPerSecond;
+            }
+
+            if (maxAcceleration > maximumAccelerationPerSecond)
+            {
+                maxAcceleration = maximumAccelerationPerSecond;
+            }
+
             fuelTank = new FuelTank(fuelLevel);
             fuelTankDisplay = new FuelTankDisplay(fuelTank);
             engine = new Engine(fuelTank);
+            drivingProcessor = new DrivingProcessor(maxAcceleration);
+            drivingInformationDisplay = new DrivingInformationDisplay(drivingProcessor);
         }
 
         public bool EngineIsRunning => engine.IsRunning;
+
+        public void Accelerate(int speed)
+        {
+            Console.WriteLine($"Accelerate from {drivingProcessor.ActualSpeed} to {speed}");
+
+            bool newSpeedExceedsMaximum = speed > MaxSpeed;
+            if (newSpeedExceedsMaximum)
+            {
+                speed = MaxSpeed;
+            }
+
+            double newConsumption;
+            if (!EngineIsRunning)
+            {
+                Console.WriteLine($"Engine is not running. Actual speed {drivingProcessor.ActualSpeed}. No action.");
+                return;
+            }
+
+            if (drivingProcessor.ActualSpeed > speed)
+            {
+                newConsumption = GetFuelConsumption(drivingProcessor.ActualSpeed);
+                engine.Consume(newConsumption);
+                return;
+            }
+
+            if (drivingProcessor.ActualSpeed == MaxSpeed)
+            {
+                newConsumption = GetFuelConsumption(drivingProcessor.ActualSpeed);
+                engine.Consume(newConsumption);
+                return;
+            }
+
+            int speedDifference = speed - drivingProcessor.ActualSpeed;
+            if (speedDifference == 0)
+            {
+                newConsumption = GetFuelConsumption(drivingProcessor.ActualSpeed);
+                engine.Consume(newConsumption);
+                return;
+            }
+
+            drivingProcessor.IncreaseSpeedTo(speed);
+            newConsumption = GetFuelConsumption(drivingProcessor.ActualSpeed);
+            engine.Consume(newConsumption);
+        }
+
+        public void BrakeBy(int speed)
+        {
+            if (!EngineIsRunning || drivingProcessor.ActualSpeed == 0)
+            {
+                return;
+            }
+
+            drivingProcessor.ReduceSpeed(speed);
+        }
 
         public void EngineStart()
         {
@@ -36,21 +111,63 @@
             engine.Stop();
         }
 
-        public void Refuel(double amount)
+        public void FreeWheel()
         {
-            if (amount < 0)
+            if (drivingProcessor.ActualSpeed > 0)
             {
-                throw new ArgumentOutOfRangeException(nameof(amount));
+                drivingProcessor.ReduceSpeed(AirResistanceSlowdown);
+            }
+            else
+            {
+                RunningIdle();
+            }
+        }
+
+        public void Refuel(double liters)
+        {
+            if (liters < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(liters));
             }
 
             EngineStop();
-            fuelTank.Refuel(amount);
+            fuelTank.Refuel(liters);
             EngineStart();
         }
 
         public void RunningIdle()
         {
-            engine.Consume(fuelConsumptionPerSecond);
+            engine.Consume(idleConsumptionPerSecond);
+        }
+
+        private double GetFuelConsumption(int currentSpeed)
+        {
+            switch (currentSpeed)
+            {
+                case 0:
+                    fuelConsumptionPerSecond = idleConsumptionPerSecond;
+                    break;
+                case >= 1 and <= 60:
+                    fuelConsumptionPerSecond = 0.0020;
+                    break;
+                case >= 61 and <= 100:
+                    fuelConsumptionPerSecond = 0.0014;
+                    break;
+                case >= 101 and <= 140:
+                    fuelConsumptionPerSecond = 0.0020;
+                    break;
+                case >= 141 and <= 200:
+                    fuelConsumptionPerSecond = 0.0025;
+                    break;
+                case >= 201 and <= MaxSpeed:
+                    fuelConsumptionPerSecond = 0.0030;
+                    break;
+                default:
+                    return fuelConsumptionPerSecond;
+            }
+
+            Console.WriteLine($"Fuel consumption at speed {currentSpeed} is {fuelConsumptionPerSecond}");
+            return fuelConsumptionPerSecond;
         }
     }
 }

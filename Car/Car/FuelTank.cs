@@ -2,18 +2,18 @@
 {
     public class FuelTank : IFuelTank
     {
-        public FuelTank(double fuelLevel)
+        private double _fillLevel;
+
+        public FuelTank(double fuelLevel = 20)
         {
             Refuel(fuelLevel);
         }
 
-        public FuelTank()
+        public double FillLevel
         {
-            var defaultFuelLevel = 20;
-            Refuel(defaultFuelLevel);
+            get => Math.Round(_fillLevel, 10);
+            private set => _fillLevel = value;
         }
-
-        public double FillLevel { get; private set; }
 
         public bool IsComplete { get; private set; }
 
@@ -21,9 +21,12 @@
 
         public void Consume(double liters)
         {
-            if (FillLevel >= 0)
+            _fillLevel -= liters;
+            _fillLevel = Math.Round(_fillLevel, 10);
+
+            if (_fillLevel < 0)
             {
-                FillLevel = FillLevel - liters;
+                _fillLevel = 0;
             }
         }
 

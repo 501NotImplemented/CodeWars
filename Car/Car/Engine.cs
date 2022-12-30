@@ -13,11 +13,13 @@
 
         public void Consume(double liters)
         {
+            Console.WriteLine($"Consuming {liters}. Fill level is {fuelTank.FillLevel}");
             if (IsRunning)
             {
                 fuelTank.Consume(liters);
-                if (fuelTank.FillLevel <= 0)
+                if (fuelTank.FillLevel < 0)
                 {
+                    Console.WriteLine($"Fuel tank level is {fuelTank.FillLevel}, stopping the engine");
                     Stop();
                 }
             }
