@@ -6,6 +6,19 @@ namespace Car.Tests;
 public class Car2ExampleTests
 {
     [Test]
+    public void Car2RandomTests()
+    {
+        var car = new Car();
+
+        car.EngineStart();
+
+        Enumerable.Range(0, 10).ToList().ForEach(s => car.Accelerate(250));
+        car.BrakeBy(15);
+        car.Accelerate(83);
+        Assert.AreEqual(19.98, car.fuelTankDisplay.FillLevel, "Wrong fuel tank fill level!");
+    }
+
+    [Test]
     public void TestAccelerateBy10()
     {
         var car = new Car();
