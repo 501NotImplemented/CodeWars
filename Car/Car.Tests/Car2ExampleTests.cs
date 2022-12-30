@@ -6,15 +6,15 @@ namespace Car.Tests;
 public class Car2ExampleTests
 {
     [Test]
-    public void Car2RandomTests()
+    public void Car2RandomTestConsumption()
     {
-        var car = new Car();
+        var car = new Car(20, 15);
 
         car.EngineStart();
 
         Enumerable.Range(0, 10).ToList().ForEach(s => car.Accelerate(250));
-        car.BrakeBy(15);
-        car.Accelerate(83);
+        car.BrakeBy(9);
+        car.Accelerate(132);
         Assert.AreEqual(19.98, car.fuelTankDisplay.FillLevel, "Wrong fuel tank fill level!");
     }
 
@@ -59,6 +59,19 @@ public class Car2ExampleTests
         car.EngineStart();
         Enumerable.Range(0, 14).ToList().ForEach(s => car.Accelerate(260));
         Assert.AreEqual(250, car.drivingInformationDisplay.ActualSpeed, "Wrong actual speed!");
+    }
+
+    [Test]
+    public void TestAccelerationAndBraking()
+    {
+        var car = new Car(20, 15);
+
+        car.EngineStart();
+
+        Enumerable.Range(0, 10).ToList().ForEach(s => car.Accelerate(250));
+        car.BrakeBy(9);
+
+        Assert.AreEqual(141, car.drivingInformationDisplay.ActualSpeed, "Wrong actual speed!");
     }
 
     [Test]

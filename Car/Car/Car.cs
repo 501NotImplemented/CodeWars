@@ -91,13 +91,15 @@
                 return;
             }
 
+            Console.WriteLine($"Braking from {drivingProcessor.ActualSpeed} by {speed}");
+
             drivingProcessor.ReduceSpeed(speed);
         }
 
         public void EngineStart()
         {
             engine.Start();
-            engine.Consume(fuelConsumptionPerSecond);
+            RunningIdle();
         }
 
         public void EngineStop()

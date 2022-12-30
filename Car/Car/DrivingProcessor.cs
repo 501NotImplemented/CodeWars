@@ -65,10 +65,6 @@
             {
                 acceleration = speedDifference;
             }
-            else if (speedDifference <= currentMaximumAcceleration && speedDifference > defaultAccelerationPerSecond)
-            {
-                acceleration = defaultAccelerationPerSecond;
-            }
             else if (speedDifference < defaultAccelerationPerSecond && speedDifference > 0)
             {
                 acceleration = speedDifference;
