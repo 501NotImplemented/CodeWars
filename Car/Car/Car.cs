@@ -66,8 +66,6 @@
 
             if (drivingProcessor.ActualSpeed > speed)
             {
-                Console.WriteLine(
-                    $"Actual speed {drivingProcessor.ActualSpeed} is more than expected {speed}. Free wheeling");
                 newConsumption = GetFuelConsumption(drivingProcessor.ActualSpeed);
                 engine.Consume(newConsumption);
                 return;
@@ -75,8 +73,6 @@
 
             if (drivingProcessor.ActualSpeed == MaxSpeed)
             {
-                Console.WriteLine(
-                    $"Actual speed {drivingProcessor.ActualSpeed} is already at max {MaxSpeed}. No action.");
                 newConsumption = GetFuelConsumption(drivingProcessor.ActualSpeed);
                 engine.Consume(newConsumption);
                 return;
@@ -92,7 +88,6 @@
 
             drivingProcessor.IncreaseSpeedTo(speed);
             newConsumption = GetFuelConsumption(drivingProcessor.ActualSpeed);
-            Console.WriteLine($"New consumption {newConsumption}");
             engine.Consume(newConsumption);
         }
 
@@ -103,16 +98,12 @@
                 return;
             }
 
-            Console.WriteLine($"Braking from {drivingProcessor.ActualSpeed} by {speed}");
-
             drivingProcessor.ReduceSpeed(speed);
         }
 
         public void EngineStart()
         {
             engine.Start();
-            Console.WriteLine("Started engine");
-            Console.WriteLine($"Fuel level {fuelTank.FillLevel}");
         }
 
         public void EngineStop()
@@ -122,10 +113,13 @@
 
         public void FreeWheel()
         {
-            Console.WriteLine("Free wheeling");
             if (drivingProcessor.ActualSpeed > 0)
             {
                 drivingProcessor.ReduceSpeed(AirResistanceSlowdown);
+            }
+            else
+            {
+                RunningIdle();
             }
         }
 
