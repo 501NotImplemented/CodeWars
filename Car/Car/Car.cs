@@ -6,6 +6,8 @@
 
         private const int MaxSpeed = 250;
 
+        private static readonly double idleConsumptionPerSecond = 0.0003;
+
         public IDrivingInformationDisplay drivingInformationDisplay;
 
         public IFuelTankDisplay fuelTankDisplay;
@@ -20,7 +22,7 @@
 
         private readonly int minimumAccelerationPerSecond = 5;
 
-        private double fuelConsumptionPerSecond = 0.0003;
+        private double fuelConsumptionPerSecond = idleConsumptionPerSecond;
 
         public Car(double fuelLevel = 20, int maxAcceleration = 10)
         {
@@ -66,7 +68,8 @@
             {
                 Console.WriteLine(
                     $"Actual speed {drivingProcessor.ActualSpeed} is more than expected {speed}. Free wheeling");
-                FreeWheel();
+                newConsumption = GetFuelConsumption(drivingProcessor.ActualSpeed);
+                engine.Consume(newConsumption);
                 return;
             }
 
@@ -79,8 +82,17 @@
                 return;
             }
 
+            int speedDifference = speed - drivingProcessor.ActualSpeed;
+            if (speedDifference == 0)
+            {
+                newConsumption = GetFuelConsumption(drivingProcessor.ActualSpeed);
+                engine.Consume(newConsumption);
+                return;
+            }
+
             drivingProcessor.IncreaseSpeedTo(speed);
             newConsumption = GetFuelConsumption(drivingProcessor.ActualSpeed);
+            Console.WriteLine($"New consumption {newConsumption}");
             engine.Consume(newConsumption);
         }
 
@@ -99,7 +111,8 @@
         public void EngineStart()
         {
             engine.Start();
-            RunningIdle();
+            Console.WriteLine("Started engine");
+            Console.WriteLine($"Fuel level {fuelTank.FillLevel}");
         }
 
         public void EngineStop()
@@ -114,8 +127,6 @@
             {
                 drivingProcessor.ReduceSpeed(AirResistanceSlowdown);
             }
-
-            // RunningIdle();
         }
 
         public void Refuel(double liters)
@@ -132,7 +143,7 @@
 
         public void RunningIdle()
         {
-            engine.Consume(fuelConsumptionPerSecond);
+            engine.Consume(idleConsumptionPerSecond);
         }
 
         private double GetFuelConsumption(int currentSpeed)
@@ -140,7 +151,7 @@
             switch (currentSpeed)
             {
                 case 0:
-                    fuelConsumptionPerSecond = 0;
+                    fuelConsumptionPerSecond = idleConsumptionPerSecond;
                     break;
                 case >= 1 and <= 60:
                     fuelConsumptionPerSecond = 0.0020;
@@ -161,6 +172,7 @@
                     return fuelConsumptionPerSecond;
             }
 
+            Console.WriteLine($"Fuel consumption at speed {currentSpeed} is {fuelConsumptionPerSecond}");
             return fuelConsumptionPerSecond;
         }
     }

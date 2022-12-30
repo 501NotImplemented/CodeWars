@@ -123,7 +123,7 @@ public class Car2ExampleTests
     [Test]
     public void TestConsumptionSpeedUpTo30()
     {
-        var car = new Car(1);
+        var car = new Car(1, 20);
 
         car.EngineStart();
 
