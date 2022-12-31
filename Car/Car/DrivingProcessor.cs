@@ -18,12 +18,23 @@
             currentMaximumAcceleration = maximumAcceleration;
         }
 
+        public double ActualConsumption { get; }
+
         public int ActualSpeed { get; private set; }
+
+        public void EngineStart()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void EngineStop()
+        {
+            throw new NotImplementedException();
+        }
 
         public void IncreaseSpeedTo(int speed)
         {
             int accelerationSpeed = GetAccelerationSpeed(speed);
-            Console.WriteLine($"Increasing speed by {accelerationSpeed}");
             ActualSpeed = ActualSpeed + accelerationSpeed;
         }
 
@@ -45,7 +56,7 @@
         private int GetAccelerationSpeed(int speed)
         {
             int speedDifference = speed - ActualSpeed;
-            Console.WriteLine($"Speed difference is {speedDifference}");
+
             int acceleration = defaultAccelerationPerSecond;
             bool newSpeedExceedsMaximumAcceleration = speedDifference >= currentMaximumAcceleration;
 
@@ -74,7 +85,6 @@
                 acceleration = speedDifference;
             }
 
-            Console.WriteLine($"Acceleration is {acceleration}");
             return acceleration;
         }
     }

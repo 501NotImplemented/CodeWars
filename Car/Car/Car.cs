@@ -12,6 +12,8 @@
 
         public IFuelTankDisplay fuelTankDisplay;
 
+        public IOnBoardComputerDisplay onBoardComputerDisplay;
+
         private readonly IDrivingProcessor drivingProcessor;
 
         private readonly IEngine engine;
@@ -21,6 +23,8 @@
         private readonly int maximumAccelerationPerSecond = 20;
 
         private readonly int minimumAccelerationPerSecond = 5;
+
+        private readonly IOnBoardComputer onBoardComputer;
 
         private double fuelConsumptionPerSecond = idleConsumptionPerSecond;
 
@@ -43,6 +47,8 @@
             engine = new Engine(fuelTank);
             drivingProcessor = new DrivingProcessor(maxAcceleration);
             drivingInformationDisplay = new DrivingInformationDisplay(drivingProcessor);
+            onBoardComputer = new OnBoardComputer(drivingProcessor);
+            onBoardComputerDisplay = new OnBoardComputerDisplay(onBoardComputer);
         }
 
         public bool EngineIsRunning => engine.IsRunning;
