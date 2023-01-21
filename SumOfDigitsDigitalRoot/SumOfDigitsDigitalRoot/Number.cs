@@ -14,7 +14,12 @@
                 return root;
             }
 
-            root = Sum(digitsFromInitialRoot);
+            while (digitsFromInitialRoot.Length > 1)
+            {
+                root = Sum(digitsFromInitialRoot);
+                digitsFromInitialRoot = GetDigitsArrayFromNumber(root);
+            }
+
             return root;
         }
 
