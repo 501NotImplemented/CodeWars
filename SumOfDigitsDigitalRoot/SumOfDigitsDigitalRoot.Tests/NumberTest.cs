@@ -12,6 +12,7 @@ namespace SumOfDigitsDigitalRoot.Tests
         [TestCase(992, ExpectedResult = 2)]
         [TestCase(167346, ExpectedResult = 9)]
         [TestCase(999999999999, ExpectedResult = 9)]
+        [TestCase(2958819262903, ExpectedResult = 1)]
         public int Tests(long n)
         {
             return Number.DigitalRoot(n);
